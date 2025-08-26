@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learn Algorithms — Roadmap & Curriculum</title>
+  <meta name="description" content="Learn algorithms from fundamentals to advanced topics: sorting, data structures, graphs, strings, mathematics, geometry, advanced topics, and complexity theory." />
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%),
+                  radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .container{ width: min(1150px, 92%); margin-inline: auto; }
+
+    /* Skip link */
+    .skip-link{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
+    .skip-link:focus{ left:1rem; top:1rem; width:auto; height:auto; padding:.5rem .75rem; background:var(--accent); color:#fff; border-radius:.5rem; }
+
+    /* Header / Nav */
+    .header{ position: relative; background: linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom: 1px solid rgba(255,255,255,.08); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: 1rem 0; }
+    .brand{ display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.3px; }
+    .brand-logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .brand span{ font-size:1.05rem; }
+    .nav a{ color:var(--text); text-decoration:none; opacity:.9; font-weight:600; }
+    .nav a:hover{ opacity:1; }
+    .links{ display:flex; gap:1.25rem; align-items:center; }
+    .cta{ background: var(--accent); color:#fff; padding:.55rem .95rem; border-radius:.7rem; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.15); }
+    .ghost{ background:transparent; border:1px solid rgba(255,255,255,.22); padding:.55rem .9rem; border-radius:.7rem; }
+    .theme-toggle{ background:transparent; border:1px solid rgba(255,255,255,.2); color:var(--text); padding:.5rem .6rem; border-radius:.6rem; cursor:pointer; }
+
+    /* Hero */
+    .hero{ display:grid; grid-template-columns: 1.25fr .75fr; gap:2rem; padding: 2.6rem 0 3.2rem; align-items:center; }
+    .hero h1{ font-size: clamp(2rem, 5vw, 3rem); line-height:1.1; margin:0 0 1rem; }
+    .hero p{ color: var(--muted); font-size: 1.05rem; margin-bottom:1.4rem; }
+    .hero .actions{ display:flex; gap:.8rem; flex-wrap:wrap; }
+    .hero .illustration{ border-radius: 1.25rem; background: linear-gradient(135deg, rgba(124,156,255,.18), rgba(92,225,230,.15)); border:1px solid rgba(255,255,255,.14); aspect-ratio: 4/3; display:grid; place-items:center; box-shadow: var(--shadow); }
+    .badge-row{ display:flex; gap:.5rem; margin-top:.75rem; flex-wrap:wrap; }
+    .badge{ border:1px dashed rgba(255,255,255,.25); padding:.25rem .6rem; border-radius:999px; font-size:.85rem; color:var(--muted); }
+
+    /* Highlights */
+    .section{ padding: 3.2rem 0; }
+    .section h2{ font-size: clamp(1.4rem, 3vw, 2rem); margin:0 0 1.2rem; }
+    .grid-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; }
+    .feature{ background: var(--card); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.12); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .feature h3{ margin:.2rem 0 .5rem; font-size:1.05rem; }
+    .feature p{ color:var(--muted); margin:.2rem 0 0; font-size:.98rem; }
+
+    /* Curriculum cards */
+    .grid-4{ display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; }
+    .card{ background: var(--bg-soft); border:1px solid rgba(255,255,255,.12); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); position:relative; overflow:hidden; }
+    .card h3{ margin:.1rem 0 .3rem; font-size:1.02rem; }
+    .card small{ color:var(--muted); }
+    .card ul{ margin:.6rem 0 0; padding-left:1.1rem; }
+    .card li{ margin:.25rem 0; }
+    .card a{ color: var(--accent-2); text-decoration:none; }
+    .card a:hover{ text-decoration:underline; }
+
+    .pill{ position:absolute; right:.8rem; top:.8rem; font-size:.72rem; color:#fff; background:linear-gradient(135deg, var(--accent), var(--accent-2)); padding:.25rem .55rem; border-radius:.6rem; opacity:.95; }
+
+    /* Roadmap */
+    .roadmap{ background: linear-gradient(180deg, rgba(124,156,255,.06), rgba(92,225,230,.06)); border:1px solid rgba(255,255,255,.12); border-radius:1rem; padding:1.2rem; box-shadow: var(--shadow); }
+    .steps{ list-style:none; padding:0; margin:0; counter-reset: step; }
+    .steps li{ counter-increment: step; position:relative; padding-left:2.6rem; margin:.6rem 0; }
+    .steps li::before{ content: counter(step); position:absolute; left:0; top:.15rem; width:1.6rem; height:1.6rem; display:grid; place-items:center; border-radius:.5rem; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; box-shadow: var(--shadow); font-weight:700; font-size:.9rem; }
+    .arrow{ color: var(--muted); font-weight:700; }
+
+    /* Footer */
+    .footer{ padding:2.2rem 0; color:var(--muted); text-align:center; font-size:.95rem; }
+    .footer a{ color:var(--accent-2); text-decoration:none; }
+
+    @media (max-width: 1000px){ .grid-4{ grid-template-columns: repeat(2, 1fr);} .hero{ grid-template-columns: 1fr; } }
+    @media (max-width: 680px){ .grid-3{ grid-template-columns: 1fr; } .grid-4{ grid-template-columns: 1fr;} .links{ display:none; } }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <!-- simple logo -->
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>AlgoLearn</span>
+      </div>
+      <div class="links">
+        <a href="#curriculum">Curriculum</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#faq">FAQ</a>
+        <a class="ghost" href="about.html" aria-label="About page (placeholder)">About</a>
+        <a class="cta" href="start-here.html" aria-label="Start Here page (placeholder)">Start Learning</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+
+    <section class="hero container">
+      <div>
+        <h1>Master Algorithms from Zero → Expert</h1>
+        <p>Structured curriculum covering <strong>fundamentals</strong>, <strong>paradigms</strong>, <strong>sorting</strong>, <strong>data structures</strong>, <strong>graphs</strong>, <strong>strings</strong>, <strong>math</strong>, <strong>geometry</strong>, <strong>advanced topics</strong>, and <strong>complexity theory</strong>.</p>
+        <div class="actions">
+          <a class="cta" href="#curriculum">Explore Curriculum</a>
+          <a class="ghost" href="#roadmap">See Roadmap</a>
+        </div>
+        <div class="badge-row" aria-hidden="true">
+          <span class="badge">Hands‑on</span>
+          <span class="badge">Visual Intuition</span>
+          <span class="badge">Interview‑ready</span>
+          <span class="badge">College‑level Theory</span>
+        </div>
+      </div>
+      <div class="illustration" role="img" aria-label="Abstract illustration for algorithms">
+        <svg viewBox="0 0 600 450" width="88%" height="88%" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+              <stop stop-color="#7c9cff" offset="0"/>
+              <stop stop-color="#5ce1e6" offset="1"/>
+            </linearGradient>
+          </defs>
+          <g fill="none" stroke="url(#g1)" stroke-width="3" stroke-linecap="round">
+            <path d="M60 80 Q120 40 180 80 T300 80 T420 80 T540 80" opacity=".6"/>
+            <path d="M60 180 Q120 220 180 180 T300 180 T420 180 T540 180" opacity=".7"/>
+            <path d="M60 280 Q120 240 180 280 T300 280 T420 280 T540 280" opacity=".8"/>
+          </g>
+          <g stroke="url(#g1)" fill="rgba(124,156,255,.15)">
+            <circle cx="180" cy="80" r="16"/>
+            <circle cx="300" cy="80" r="16"/>
+            <circle cx="420" cy="80" r="16"/>
+            <circle cx="180" cy="180" r="16"/>
+            <circle cx="300" cy="180" r="16"/>
+            <circle cx="420" cy="180" r="16"/>
+            <circle cx="180" cy="280" r="16"/>
+            <circle cx="300" cy="280" r="16"/>
+            <circle cx="420" cy="280" r="16"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+  </header>
+
+  <main id="main">
+    <!-- Highlights -->
+    <section class="section container" id="highlights" aria-labelledby="highlights-title">
+      <h2 id="highlights-title">Why this course works</h2>
+      <div class="grid-3">
+        <article class="feature">
+          <h3>Step‑by‑step progression</h3>
+          <p>Each stage builds on the previous one, from Big‑O to NP‑Completeness. Short lessons, clear prerequisites.</p>
+        </article>
+        <article class="feature">
+          <h3>Visual intuition + proofs</h3>
+          <p>Animations, diagrams, and correctness proofs where they matter — so you understand <em>why</em>, not just how.</p>
+        </article>
+        <article class="feature">
+          <h3>Practice first</h3>
+          <p>Every topic links to exercises and code labs. Examples in Python/Java/C++ (choose your path).</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Curriculum -->
+    <section class="section container" id="curriculum" aria-labelledby="curriculum-title">
+      <h2 id="curriculum-title">Curriculum (10 Stages)</h2>
+      <div class="grid-4">
+        <!-- Stage 1 -->
+        <article class="card"><span class="pill">Start here</span>
+          <h3><a href="foundations.html">Stage 1 · Fundamentals</a></h3>
+          <small>What is an algorithm, correctness, efficiency</small>
+          <ul>
+            <li><a href="foundations/what-is-an-algorithm.html">What is an Algorithm?</a></li>
+            <li><a href="foundations/complexity.html">Big‑O & Complexity</a></li>
+            <li><a href="foundations/recurrences.html">Recurrence Relations</a></li>
+            <li><a href="foundations/amortized.html">Amortized Analysis</a></li>
+          </ul>
+        </article>
+        <!-- Stage 2 -->
+        <article class="card">
+          <h3><a href="core-paradigms.html">Stage 2 · Core Paradigms</a></h3>
+          <small>How to think algorithmically</small>
+          <ul>
+            <li><a href="paradigms/brute-force.html">Brute Force</a></li>
+            <li><a href="paradigms/divide-and-conquer.html">Divide & Conquer</a></li>
+            <li><a href="paradigms/greedy.html">Greedy</a></li>
+            <li><a href="paradigms/dp.html">Dynamic Programming</a></li>
+            <li><a href="paradigms/backtracking.html">Backtracking</a></li>
+            <li><a href="paradigms/randomized.html">Randomized</a></li>
+          </ul>
+        </article>
+        <!-- Stage 3 -->
+        <article class="card">
+          <h3><a href="sorting.html">Stage 3 · Sorting & Searching</a></h3>
+          <small>From basics to linear‑time methods</small>
+          <ul>
+            <li><a href="sorting/merge-sort.html">Merge Sort</a></li>
+            <li><a href="sorting/quick-sort.html">QuickSort</a></li>
+            <li><a href="sorting/heap-sort.html">HeapSort</a></li>
+            <li><a href="sorting/radix-counting.html">Counting/Radix</a></li>
+            <li><a href="searching/binary-search.html">Binary Search</a></li>
+            <li><a href="searching/selection.html">Selection & Order Statistics</a></li>
+          </ul>
+        </article>
+        <!-- Stage 4 -->
+        <article class="card">
+          <h3><a href="data-structures.html">Stage 4 · Data Structures</a></h3>
+          <small>Algorithms powered by structures</small>
+          <ul>
+            <li><a href="ds/arrays-strings.html">Arrays & Strings</a></li>
+            <li><a href="ds/linked-lists.html">Linked Lists</a></li>
+            <li><a href="ds/stacks-queues.html">Stacks & Queues</a></li>
+            <li><a href="ds/hashing.html">Hashing</a></li>
+            <li><a href="ds/trees.html">BST / AVL / Red‑Black</a></li>
+            <li><a href="ds/heaps.html">Heaps & PQ</a></li>
+            <li><a href="ds/tries.html">Tries</a></li>
+            <li><a href="ds/union-find.html">Union‑Find (DSU)</a></li>
+          </ul>
+        </article>
+        <!-- Stage 5 -->
+        <article class="card">
+          <h3><a href="graphs.html">Stage 5 · Graph Algorithms</a></h3>
+          <small>Paths, flows, and connectivity</small>
+          <ul>
+            <li><a href="graphs/bfs-dfs.html">BFS & DFS</a></li>
+            <li><a href="graphs/topological-sort.html">Topological Sort</a></li>
+            <li><a href="graphs/shortest-paths.html">Dijkstra / Bellman‑Ford / Floyd‑Warshall</a></li>
+            <li><a href="graphs/mst.html">Minimum Spanning Trees (Kruskal/Prim)</a></li>
+            <li><a href="graphs/flow.html">Network Flow (Ford‑Fulkerson, Dinic)</a></li>
+            <li><a href="graphs/scc.html">Strongly Connected Components</a></li>
+            <li><a href="graphs/matching.html">Bipartite Matching & Hungarian</a></li>
+          </ul>
+        </article>
+        <!-- Stage 6 -->
+        <article class="card">
+          <h3><a href="strings.html">Stage 6 · String & Text Algorithms</a></h3>
+          <small>Fast pattern matching</small>
+          <ul>
+            <li><a href="strings/kmp.html">KMP</a></li>
+            <li><a href="strings/rabin-karp.html">Rabin‑Karp</a></li>
+            <li><a href="strings/z-algorithm.html">Z‑Algorithm</a></li>
+            <li><a href="strings/suffix-structures.html">Suffix Array/Tree</a></li>
+            <li><a href="strings/aho-corasick.html">Aho–Corasick</a></li>
+            <li><a href="strings/edit-distance.html">Edit Distance</a></li>
+          </ul>
+        </article>
+        <!-- Stage 7 -->
+        <article class="card">
+          <h3><a href="math.html">Stage 7 · Mathematical Algorithms</a></h3>
+          <small>Number theory & fast math</small>
+          <ul>
+            <li><a href="math/gcd.html">GCD / LCM</a></li>
+            <li><a href="math/primes.html">Sieve & Miller‑Rabin</a></li>
+            <li><a href="math/modular-exponentiation.html">Modular Exponentiation</a></li>
+            <li><a href="math/crt.html">Chinese Remainder Theorem</a></li>
+            <li><a href="math/fft.html">FFT</a></li>
+            <li><a href="math/matrix-exponentiation.html">Matrix Exponentiation</a></li>
+          </ul>
+        </article>
+        <!-- Stage 8 -->
+        <article class="card">
+          <h3><a href="geometry.html">Stage 8 · Computational Geometry</a></h3>
+          <small>Reasoning in the plane</small>
+          <ul>
+            <li><a href="geometry/convex-hull.html">Convex Hull</a></li>
+            <li><a href="geometry/line-sweep.html">Line Sweep</a></li>
+            <li><a href="geometry/closest-pair.html">Closest Pair</a></li>
+            <li><a href="geometry/point-in-polygon.html">Point in Polygon</a></li>
+          </ul>
+        </article>
+        <!-- Stage 9 -->
+        <article class="card">
+          <h3><a href="advanced.html">Stage 9 · Advanced Topics</a></h3>
+          <small>Modern techniques & heuristics</small>
+          <ul>
+            <li><a href="advanced/approximation.html">Approximation</a></li>
+            <li><a href="advanced/online.html">Online Algorithms</a></li>
+            <li><a href="advanced/minimax.html">Minimax & Alpha‑Beta</a></li>
+            <li><a href="advanced/probabilistic.html">Monte Carlo / Las Vegas</a></li>
+            <li><a href="advanced/gradient-descent.html">Gradient Descent</a></li>
+            <li><a href="advanced/quantum.html">Quantum Basics</a></li>
+          </ul>
+        </article>
+        <!-- Stage 10 -->
+        <article class="card">
+          <h3><a href="complexity.html">Stage 10 · Complexity & Computability</a></h3>
+          <small>Limits of computation</small>
+          <ul>
+            <li><a href="complexity/p-vs-np.html">P vs NP</a></li>
+            <li><a href="complexity/np-complete.html">NP‑Complete Problems</a></li>
+            <li><a href="complexity/reductions.html">Reductions</a></li>
+            <li><a href="complexity/halting.html">Halting Problem</a></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="section container" id="roadmap" aria-labelledby="roadmap-title">
+      <h2 id="roadmap-title">Recommended Roadmap</h2>
+      <div class="roadmap">
+        <ol class="steps">
+          <li>Stage 1 · Fundamentals → <span class="arrow">→</span> Stage 2 · Core Paradigms</li>
+          <li>Stage 2 · Core Paradigms → <span class="arrow">→</span> Stage 3 · Sorting & Searching</li>
+          <li>Stage 2 · Core Paradigms → <span class="arrow">→</span> Stage 4 · Data Structures</li>
+          <li>Stage 4 · Data Structures → <span class="arrow">→</span> Stage 5 · Graph Algorithms</li>
+          <li>Stage 3/4 → <span class="arrow">→</span> Stage 6 · String Algorithms</li>
+          <li>Stage 1 → <span class="arrow">→</span> Stage 7 · Mathematical Algorithms → <span class="arrow">→</span> Stage 8 · Geometry</li>
+          <li>Stages 5/6/7 → <span class="arrow">→</span> Stage 9 · Advanced Topics</li>
+          <li>Stages 2 & 7 → <span class="arrow">→</span> Stage 10 · Complexity & Computability</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- FAQ / Starter links -->
+    <section class="section container" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Getting Started</h2>
+      <div class="grid-3">
+        <article class="feature">
+          <h3><a href="foundations/what-is-an-algorithm.html">What is an algorithm?</a></h3>
+          <p>Definition, properties (correctness, efficiency), and why algorithms matter.</p>
+        </article>
+        <article class="feature">
+          <h3><a href="paradigms/dp.html">How to think in Dynamic Programming?</a></h3>
+          <p>Subproblems, optimal substructure, memorization vs tabulation.</p>
+        </article>
+        <article class="feature">
+          <h3><a href="graphs/shortest-paths.html">Shortest paths: where to begin?</a></h3>
+          <p>Use Dijkstra on non‑negative weights; Bellman‑Ford when negatives appear.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> AlgoLearn. Built for learners and educators. <a href="sitemap.html">Sitemap</a> · <a href="contact.html">Contact</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted in localStorage)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
