@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlgoLearn — What is an Algorithm?</title>
+  <meta name="description" content="Definition of an algorithm, key properties (correctness, efficiency, finiteness, definiteness, I/O), examples, pseudocode, and mini interactive demo." />
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --border: rgba(255,255,255,.12);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+      --border: rgba(17,24,39,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%),
+                  radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container{ width: min(1100px, 92%); margin-inline: auto; }
+    .header{ position: sticky; top:0; z-index: 10; background: linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.3px; }
+    .brand-logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .nav a{ color:var(--text); text-decoration:none; opacity:.9; font-weight:600; }
+    .nav a:hover{ opacity:1; }
+    .links{ display:flex; gap:1.1rem; align-items:center; }
+    .cta{ background: var(--accent); color:#fff; padding:.5rem .9rem; border-radius:.7rem; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.15); }
+    .ghost{ background:transparent; border:1px solid var(--border); padding:.5rem .9rem; border-radius:.7rem; }
+    .theme-toggle{ background:transparent; border:1px solid var(--border); color:var(--text); padding:.45rem .6rem; border-radius:.6rem; cursor:pointer; }
+
+    .hero{ padding: 2.2rem 0 1.2rem; }
+    .breadcrumbs{ color:var(--muted); font-size:.92rem; }
+    .hero h1{ font-size: clamp(2rem, 4.5vw, 3rem); margin:.4rem 0 .6rem; }
+    .hero p{ color:var(--muted); max-width: 65ch; }
+
+    .layout{ display:grid; grid-template-columns: 260px 1fr; gap:1.2rem; }
+    aside{ position:sticky; top:72px; align-self:start; background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .toc h3{ margin:.2rem 0 .4rem; font-size:1rem; }
+    .toc a{ color: var(--muted); text-decoration:none; display:block; padding:.25rem 0; }
+    .toc a:hover{ color: var(--text); }
+
+    .section{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1.2rem; box-shadow: var(--shadow); margin-bottom:1rem; }
+    .section h2{ margin:.1rem 0 .4rem; font-size:1.25rem; }
+    .muted{ color: var(--muted); }
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background: var(--card); padding:.12rem .35rem; border-radius:.35rem; border:1px solid var(--border); }
+    .badge{ border:1px dashed var(--border); padding:.15rem .45rem; border-radius:999px; font-size:.8rem; color:var(--muted); }
+
+    .cards{ display:grid; grid-template-columns: repeat(2, 1fr); gap:.9rem; }
+    .card{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:.8rem 1rem; }
+
+    pre{ background: var(--bg-soft); border:1px dashed var(--border); border-radius:.7rem; padding: .9rem; overflow:auto; }
+    code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+    .demo{ display:grid; grid-template-columns: 1fr 1fr; gap:1rem; align-items:start; }
+    .panel{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .meta{ font-size:.92rem; color: var(--muted); }
+    .btn{ background: var(--accent); color:#fff; padding:.45rem .8rem; border-radius:.6rem; border:0; cursor:pointer; }
+
+    .footer{ padding:1.8rem 0; color:var(--muted); text-align:center; font-size:.95rem; }
+    .footer a{ color:var(--accent-2); text-decoration:none; }
+
+    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr; } aside{ position:relative; top:auto; } .cards, .demo{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>AlgoLearn</span>
+      </div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Foundations</a>
+        <a class="ghost" href="foundations/complexity.html">Next: Big‑O →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="foundations.html" class="muted" style="text-decoration:none;">Foundations</a> / What is an Algorithm?</div>
+    <h1>What is an Algorithm?</h1>
+    <p>A precise, finite sequence of steps that transforms <em>input</em> into the desired <em>output</em>. In practice, a good algorithm is <strong>correct</strong>, <strong>efficient</strong>, <strong>definite</strong>, and <strong>terminating</strong>.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Definition</span>
+      <span class="badge">Examples</span>
+      <span class="badge">Mini‑demo</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition & Intuition</a>
+        <a href="#properties">Key Properties</a>
+        <a href="#vs">Algorithm vs Program vs Heuristic</a>
+        <a href="#pseudo">Pseudocode Conventions</a>
+        <a href="#correctness">Correctness (sketch)</a>
+        <a href="#efficiency">Efficiency (time & space)</a>
+        <a href="#demo">Mini Demo: Search Costs</a>
+        <a href="#next">Where to go next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition & Intuition</h2>
+        <p>An <strong>algorithm</strong> is a well‑defined procedure that takes some value(s) as input and produces some value(s) as output. It must be unambiguous and always finish. Think of it like a recipe: ingredients (inputs), steps (procedure), and dish (output).</p>
+        <div class="cards">
+          <div class="card">
+            <strong>Examples</strong>
+            <ul>
+              <li>Long division (math)</li>
+              <li>Euclid’s GCD</li>
+              <li>Merge sort (CS)</li>
+              <li>Tea recipe (everyday)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <strong>Deterministic vs Randomized</strong>
+            <ul>
+              <li>Deterministic: same input → same steps</li>
+              <li>Randomized: uses randomness (e.g., randomized quicksort)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="properties" class="section">
+        <h2>Key Properties</h2>
+        <ul>
+          <li><strong>Correctness</strong> — solves the intended problem for all valid inputs.</li>
+          <li><strong>Efficiency</strong> — reasonable time/space usage (scales with input size).</li>
+          <li><strong>Finiteness</strong> — terminates after a finite number of steps.</li>
+          <li><strong>Definiteness</strong> — each step is clear and unambiguous.</li>
+          <li><strong>Input/Output</strong> — clearly specified inputs and at least one output.</li>
+        </ul>
+      </section>
+
+      <section id="vs" class="section">
+        <h2>Algorithm vs Program vs Heuristic</h2>
+        <div class="cards">
+          <div class="card">
+            <strong>Algorithm</strong>
+            <p class="muted">Abstract, language‑agnostic set of steps. Can be expressed as pseudocode, math, or a diagram.</p>
+          </div>
+          <div class="card">
+            <strong>Program</strong>
+            <p class="muted">A concrete implementation of one (or more) algorithms in a programming language, runnable by a computer.</p>
+          </div>
+          <div class="card">
+            <strong>Heuristic</strong>
+            <p class="muted">A practical rule‑of‑thumb that often works but may not guarantee optimality or correctness in all cases.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="pseudo" class="section">
+        <h2>Pseudocode Conventions</h2>
+        <p>Pseudocode describes the algorithm precisely without being tied to a specific language or compiler.</p>
+        <pre><code>// Linear Search
+LINEAR-SEARCH(A, x)
+  for i ← 0 to length(A) − 1 do
+    if A[i] = x then
+      return i
+  return NOT-FOUND
+
+// Binary Search (requires sorted A)
+BINARY-SEARCH(A, x)
+  low ← 0; high ← length(A) − 1
+  while low ≤ high do
+    mid ← ⌊(low + high) / 2⌋
+    if A[mid] = x then return mid
+    else if A[mid] < x then low ← mid + 1
+    else high ← mid − 1
+  return NOT-FOUND</code></pre>
+      </section>
+
+      <section id="correctness" class="section">
+        <h2>Correctness (sketch)</h2>
+        <p>To argue that an algorithm always gives the right answer and terminates:</p>
+        <ul>
+          <li><strong>Preconditions</strong>: what must be true before it runs (e.g., array is sorted for binary search).</li>
+          <li><strong>Postconditions</strong>: what must be true after it runs (e.g., returned index points to the key or NOT‑FOUND).</li>
+          <li><strong>Loop invariants</strong>: facts that remain true on every iteration (used with induction: initialization, maintenance, termination).</li>
+          <li><strong>Termination</strong>: show a measure ("rank") strictly decreases and is bounded below.</li>
+        </ul>
+      </section>
+
+      <section id="efficiency" class="section">
+        <h2>Efficiency (time & space)</h2>
+        <p>We analyze resource growth with input size <span class="kbd">n</span> using asymptotic notation:</p>
+        <ul>
+          <li><span class="kbd">O(1)</span> constant, <span class="kbd">O(log n)</span> logarithmic</li>
+          <li><span class="kbd">O(n)</span> linear, <span class="kbd">O(n log n)</span> near‑linear</li>
+          <li><span class="kbd">O(n²)</span> quadratic, …</li>
+        </ul>
+        <p class="meta">Binary search beats linear search on large, sorted inputs: <span class="kbd">O(log n)</span> vs <span class="kbd">O(n)</span>.</p>
+        <p>Deep dive next: <a href="foundations/complexity.html">Big‑O & Complexity</a>.</p>
+      </section>
+
+      <section id="demo" class="section">
+        <h2>Mini Demo: Search Costs</h2>
+        <div class="demo">
+          <div class="panel">
+            <label for="n">Array size n:</label>
+            <input id="n" type="range" min="1" max="1000000" step="1" value="1000" style="width:100%" />
+            <div class="meta">n = <span id="n-val">1000</span></div>
+            <p><button class="btn" id="calc">Recalculate</button></p>
+            <p class="muted">Assumes worst‑case comparisons.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Estimated Comparisons</h3>
+            <ul>
+              <li>Linear search: <strong><span id="lin">1000</span></strong> ≈ O(n)</li>
+              <li>Binary search: <strong><span id="bin">10</span></strong> ≈ ⌊log₂ n⌋ + 1</li>
+            </ul>
+            <p class="meta">Try sliding n up to 1,000,000 to feel the difference!</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Where to go next</h2>
+        <p>Proceed to <a href="foundations/complexity.html">Big‑O & Complexity</a>, then <a href="foundations/recurrences.html">Recurrences</a> and <a href="foundations/amortized.html">Amortized Analysis</a>. When ready, jump into <a href="core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> AlgoLearn · <a href="index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Mini demo logic
+    const nRange = document.getElementById('n');
+    const nVal = document.getElementById('n-val');
+    const lin = document.getElementById('lin');
+    const bin = document.getElementById('bin');
+    const calcBtn = document.getElementById('calc');
+
+    function recalc(){
+      const n = parseInt(nRange.value, 10) || 1;
+      nVal.textContent = n.toLocaleString();
+      lin.textContent = n.toLocaleString();
+      // floor(log2(n)) + 1 comparisons in worst case for binary search
+      const log2 = Math.floor(Math.log2(n)) + 1;
+      bin.textContent = log2.toLocaleString();
+    }
+    nRange.addEventListener('input', recalc);
+    calcBtn.addEventListener('click', recalc);
+    recalc();
+  </script>
+</body>
+</html>
