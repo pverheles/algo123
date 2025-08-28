@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlgoLearn — Big‑O & Complexity</title>
+  <meta name="description" content="Big‑O, Θ, Ω notation; worst/average/best case; growth rates; rules; examples; and interactive intuition for time complexity." />
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --border: rgba(255,255,255,.12);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+      --border: rgba(17,24,39,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%),
+                  radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container{ width: min(1100px, 92%); margin-inline: auto; }
+    .header{ position: sticky; top:0; z-index: 10; background: linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.3px; }
+    .brand-logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .nav a{ color:var(--text); text-decoration:none; opacity:.9; font-weight:600; }
+    .nav a:hover{ opacity:1; }
+    .links{ display:flex; gap:1.1rem; align-items:center; }
+    .cta{ background: var(--accent); color:#fff; padding:.5rem .9rem; border-radius:.7rem; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,.15); }
+    .ghost{ background:transparent; border:1px solid var(--border); padding:.5rem .9rem; border-radius:.7rem; }
+    .theme-toggle{ background:transparent; border:1px solid var(--border); color:var(--text); padding:.45rem .6rem; border-radius:.6rem; cursor:pointer; }
+
+    .hero{ padding: 2.2rem 0 1.2rem; }
+    .breadcrumbs{ color:var(--muted); font-size:.92rem; }
+    .hero h1{ font-size: clamp(2rem, 4.5vw, 3rem); margin:.4rem 0 .6rem; }
+    .hero p{ color:var(--muted); max-width: 65ch; }
+
+    .layout{ display:grid; grid-template-columns: 260px 1fr; gap:1.2rem; }
+    aside{ position:sticky; top:72px; align-self:start; background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .toc h3{ margin:.2rem 0 .4rem; font-size:1rem; }
+    .toc a{ color: var(--muted); text-decoration:none; display:block; padding:.25rem 0; }
+    .toc a:hover{ color: var(--text); }
+
+    .section{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1.2rem; box-shadow: var(--shadow); margin-bottom:1rem; }
+    .section h2{ margin:.1rem 0 .4rem; font-size:1.25rem; }
+    .muted{ color: var(--muted); }
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background: var(--card); padding:.12rem .35rem; border-radius:.35rem; border:1px solid var(--border); }
+    .badge{ border:1px dashed var(--border); padding:.15rem .45rem; border-radius:999px; font-size:.8rem; color:var(--muted); }
+
+    .cards{ display:grid; grid-template-columns: repeat(2, 1fr); gap:.9rem; }
+    .card{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:.8rem 1rem; }
+
+    pre{ background: var(--bg-soft); border:1px dashed var(--border); border-radius:.7rem; padding: .9rem; overflow:auto; }
+    code{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+
+    .demo{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:1rem; }
+    .panel{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:1rem; }
+    .meta{ font-size:.92rem; color: var(--muted); }
+    .btn{ background: var(--accent); color:#fff; padding:.45rem .8rem; border-radius:.6rem; border:0; cursor:pointer; }
+
+    .footer{ padding:1.8rem 0; color:var(--muted); text-align:center; font-size:.95rem; }
+    .footer a{ color:var(--accent-2); text-decoration:none; }
+
+    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr; } aside{ position:relative; top:auto; } .cards, .grid-2{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>AlgoLearn</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../foundations.html">Foundations</a>
+        <a class="ghost" href="recurrences.html">Next: Recurrences →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../foundations.html" class="muted" style="text-decoration:none;">Foundations</a> / Big‑O & Complexity</div>
+    <h1>Big‑O & Complexity</h1>
+    <p>How we measure algorithm efficiency: asymptotic notation, growth rates, and best/average/worst‑case analysis — with practical rules and examples.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Asymptotics</span>
+      <span class="badge">Intuition + Rigor</span>
+      <span class="badge">Hands‑on</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#why">Why Complexity?</a>
+        <a href="#notation">Asymptotic Notation</a>
+        <a href="#growth">Common Growth Rates</a>
+        <a href="#cases">Best / Average / Worst</a>
+        <a href="#rules">Rules of Thumb</a>
+        <a href="#examples">Examples</a>
+        <a href="#pitfalls">Pitfalls</a>
+        <a href="#demo">Interactive Intuition</a>
+        <a href="#next">Where to go next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="why" class="section">
+        <h2>Why Complexity?</h2>
+        <p>Complexity analysis compares algorithms <em>independently of hardware</em> by focusing on how resource usage grows with input size <span class="kbd">n</span>. It guides design choices and scalability expectations.</p>
+        <div class="cards">
+          <div class="card"><strong>Time</strong><p class="meta">How many basic steps (comparisons, assignments) as a function of <span class="kbd">n</span>.</p></div>
+          <div class="card"><strong>Space</strong><p class="meta">How much extra memory (beyond input) does the algorithm require?</p></div>
+        </div>
+      </section>
+
+      <section id="notation" class="section">
+        <h2>Asymptotic Notation</h2>
+        <div class="cards">
+          <div class="card">
+            <strong>Big‑O — upper bound</strong>
+            <p>f(n) is in O(g(n)) if there exist constants c, n₀ such that for all n ≥ n₀, f(n) ≤ c·g(n).</p>
+          </div>
+          <div class="card">
+            <strong>Θ — tight bound</strong>
+            <p>f(n) is in Θ(g(n)) if it is both O(g(n)) and Ω(g(n)).</p>
+          </div>
+          <div class="card">
+            <strong>Ω — lower bound</strong>
+            <p>f(n) is in Ω(g(n)) if there exist constants c, n₀ such that for all n ≥ n₀, f(n) ≥ c·g(n).</p>
+          </div>
+        </div>
+        <p class="meta">Optional extras: little‑o and little‑ω capture <em>strictly</em> smaller/greater growth.</p>
+      </section>
+
+      <section id="growth" class="section">
+        <h2>Common Growth Rates (slow → fast)</h2>
+        <div class="cards">
+          <div class="card"><strong>O(1)</strong><p class="meta">constant</p></div>
+          <div class="card"><strong>O(log n)</strong><p class="meta">logarithmic</p></div>
+          <div class="card"><strong>O(n)</strong><p class="meta">linear</p></div>
+          <div class="card"><strong>O(n log n)</strong><p class="meta">near‑linear</p></div>
+          <div class="card"><strong>O(n²)</strong><p class="meta">quadratic</p></div>
+          <div class="card"><strong>O(n³)</strong><p class="meta">cubic</p></div>
+          <div class="card"><strong>O(2ⁿ), O(n!)</strong><p class="meta">exponential / factorial</p></div>
+        </div>
+      </section>
+
+      <section id="cases" class="section">
+        <h2>Best / Average / Worst Cases</h2>
+        <ul>
+          <li><strong>Worst‑case</strong>: maximum cost for inputs of size n (often used for guarantees).</li>
+          <li><strong>Average‑case</strong>: expected cost over all inputs of size n (needs input distribution model).</li>
+          <li><strong>Best‑case</strong>: minimum cost; useful but rarely a guarantee.</li>
+        </ul>
+      </section>
+
+      <section id="rules" class="section">
+        <h2>Rules of Thumb</h2>
+        <ul>
+          <li>Ignore constant factors and lower‑order terms.</li>
+          <li>Nesting multiplies: a loop inside a loop → product of sizes.</li>
+          <li>Sequential composition adds: do A then B → O(f(n) + g(n)) = O(max).</li>
+          <li>Divide‑and‑conquer recurrences use Master Theorem when applicable.</li>
+          <li>Hash table expected operations are ≈ O(1) under good hashing & load factor.</li>
+        </ul>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <pre><code>// Example 1: linear loop
+sum = 0
+for i from 1 to n:
+  sum = sum + i
+// → O(n)
+
+// Example 2: nested loops
+for i from 1 to n:
+  for j from 1 to n:
+    do_constant_work()
+// → O(n^2)
+
+// Example 3: binary search (on sorted array)
+low = 0; high = n-1
+while low <= high:
+  mid = floor((low+high)/2)
+  if A[mid] == x: return mid
+  else if A[mid] < x: low = mid + 1
+  else: high = mid - 1
+// → O(log n) comparisons</code></pre>
+      </section>
+
+      <section id="pitfalls" class="section">
+        <h2>Common Pitfalls</h2>
+        <ul>
+          <li>Confusing worst‑case with average‑case.</li>
+          <li>Counting operations that depend on implementation details; prefer dominant term.</li>
+          <li>Forgetting that <span class="kbd">O(n)</span> can still be slow for very large <span class="kbd">n</span>.</li>
+          <li>Assuming hash tables are always O(1) — adversarial inputs can degrade to O(n).</li>
+        </ul>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Intuition</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="n">Input size n:</label>
+            <input id="n" type="range" min="1" max="1000000" step="1" value="1000" style="width:100%" />
+            <div class="meta">n = <span id="n-val">1000</span></div>
+            <p><button class="btn" id="calc">Recalculate</button></p>
+            <p class="meta">We estimate steps for common complexities at this n.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Estimated Steps</h3>
+            <ul>
+              <li>O(1): <strong>~1</strong></li>
+              <li>O(log₂ n): <strong><span id="logn">10</span></strong></li>
+              <li>O(n): <strong><span id="nsteps">1,000</span></strong></li>
+              <li>O(n log₂ n): <strong><span id="nlogn">10,000</span></strong></li>
+              <li>O(n²): <strong><span id="n2">1,000,000</span></strong></li>
+            </ul>
+            <p class="meta">Slide n up to 1,000,000 and see how quickly n² explodes compared to n log n.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Where to go next</h2>
+        <p>Continue to <a href="recurrences.html">Recurrence Relations</a> and then <a href="amortized.html">Amortized Analysis</a>. When ready, move on to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> AlgoLearn · <a href="../index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Demo calculations
+    const nRange = document.getElementById('n');
+    const nVal = document.getElementById('n-val');
+    const logn = document.getElementById('logn');
+    const nsteps = document.getElementById('nsteps');
+    const nlogn = document.getElementById('nlogn');
+    const n2 = document.getElementById('n2');
+    const calcBtn = document.getElementById('calc');
+
+    function recalc(){
+      const n = Math.max(1, parseInt(nRange.value, 10) || 1);
+      const lg = Math.floor(Math.log2(n)) + 1; // comparisons for binary search
+      nVal.textContent = n.toLocaleString();
+      logn.textContent = lg.toLocaleString();
+      nsteps.textContent = n.toLocaleString();
+      const nlog = Math.round(n * lg);
+      nlogn.textContent = nlog.toLocaleString();
+      n2.textContent = (n*n).toLocaleString();
+    }
+    nRange.addEventListener('input', recalc);
+    calcBtn.addEventListener('click', recalc);
+    recalc();
+  </script>
+</body>
+</html>

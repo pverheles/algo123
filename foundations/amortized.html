@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlgoLearn — Amortized Analysis</title>
+  <meta name="description" content="Amortized analysis: aggregate, accounting, and potential methods. Dynamic array push, stack multipop, and union–find intuition with an interactive simulator." />
+  <!-- MathJax for clean formulas -->
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --border: rgba(255,255,255,.12);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+      --border: rgba(17,24,39,.12);
+    }
+    body{margin:0; font-family:ui-sans-serif,system-ui; background:radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%), radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%), var(--bg); color:var(--text);}
+    .container{width:min(1100px,92%); margin:auto;}
+    .header{background:linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; backdrop-filter: blur(8px);}
+    .nav{display:flex; justify-content:space-between; align-items:center; padding:.9rem 0;}
+    .brand{display:flex; align-items:center; gap:.6rem; font-weight:800;}
+    .brand-logo{width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow);} 
+    .nav a{color:var(--text); text-decoration:none; margin-left:1rem; font-weight:600; opacity:.9;}
+    .nav a:hover{opacity:1;}
+    .theme-toggle{background:transparent; border:1px solid var(--border); border-radius:.6rem; padding:.45rem .6rem; cursor:pointer; color:var(--text);}  
+    .hero{padding:2.2rem 0 1.4rem;}
+    .breadcrumbs{font-size:.92rem; color:var(--muted);} 
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem); margin:.4rem 0 .6rem;} 
+    .hero p{color:var(--muted); max-width:65ch;}
+
+    .section{background:var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1.2rem; box-shadow:var(--shadow); margin:1rem 0;}
+    h2{margin-top:0; font-size:1.25rem;}
+    ul{margin:.6rem 0 0 1.2rem;}
+    .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:.8rem; margin-top:.6rem;}
+    .card{background:var(--card); border:1px solid var(--border); border-radius:.8rem; padding:.8rem 1rem;}
+    .formula{background:var(--card); border:1px solid var(--border); border-radius:.6rem; padding:.5rem .8rem; margin:.5rem 0; text-align:center;}
+
+    .demo{display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:start;}
+    .panel{background:var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow:var(--shadow);} 
+    .btn{background:var(--accent); color:#fff; padding:.45rem .8rem; border-radius:.6rem; border:0; cursor:pointer;} 
+    .meta{font-size:.92rem; color:var(--muted);} 
+    table{width:100%; border-collapse:collapse;}
+    th, td{border-bottom:1px solid var(--border); padding:.4rem .3rem; text-align:left;}
+    .tfoot{font-weight:700;}
+
+    .footer{padding:1.8rem 0; color:var(--muted); text-align:center; font-size:.95rem;}
+    .footer a{color:var(--accent-2); text-decoration:none;}
+
+    @media (max-width: 980px){ .demo{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container">
+      <div class="brand">
+        <div class="brand-logo"><svg viewBox="0 0 24 24" width="18" height="18" stroke="white" fill="none"><path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span>AlgoLearn</span>
+      </div>
+      <div>
+        <a href="../index.html">Home</a>
+        <a href="../foundations.html">Foundations</a>
+        <a href="recurrences.html">← Recurrences</a>
+        <button class="theme-toggle" id="theme-toggle">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / Curriculum / Foundations / Amortized Analysis</div>
+    <h1>Amortized Analysis</h1>
+    <p>Understand average <em>per‑operation</em> cost over a <em>sequence</em> of operations. Learn the <strong>aggregate</strong>, <strong>accounting</strong>, and <strong>potential</strong> methods, with classic examples and an interactive simulator.</p>
+  </section>
+
+  <main class="container">
+    <section class="section">
+      <h2>Why amortized analysis?</h2>
+      <p>Some operations are occasionally expensive (e.g., array resize) but cheap most of the time. Amortized analysis proves that the <em>average cost per operation</em> is small even though the <em>worst case</em> of a single operation is large.</p>
+      <div class="cards">
+        <div class="card"><strong>Aggregate method</strong><p class="meta">Total cost of n operations divided by n.</p></div>
+        <div class="card"><strong>Accounting method</strong><p class="meta">Overcharge cheap ops to save "credits" for expensive ones.</p></div>
+        <div class="card"><strong>Potential method</strong><p class="meta">Define a potential \(\Phi\) on the data structure; amortized cost is \(\hat c_i = c_i + \Phi(D_i) - \Phi(D_{i-1})\).</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Example: Dynamic array push with doubling</h2>
+      <p>Suppose we store a stack in an array. When it fills, we allocate a new array of double capacity and copy elements. Let each copy or insert cost 1 unit.</p>
+      <div class="formula">For n pushes starting from capacity 1: total copies = \(1 + 2 + 4 + \cdots + 2^{k-1} < 2n\) ⇒ total cost \(\le n + 2n = 3n\). Amortized cost \(\le 3\).</div>
+      <pre><code>// PUSH(x)
+if size == capacity:
+  new = array(2*capacity)
+  copy capacity items to new    // cost = capacity
+  capacity = 2*capacity
+A[size] = x                      // cost = 1
+size = size + 1</code></pre>
+      <p class="meta">Using the <em>accounting</em> method, charge 3 to every push: 1 pays for the insert now, and 2 are saved as credits to pay for future copies.</p>
+    </section>
+
+    <section class="section">
+      <h2>Example: Stack with MULTIPOP</h2>
+      <p>Assume operations <span class="meta">PUSH, POP, MULTIPOP(k)</span> where \(\text{MULTIPOP}(k)\) pops up to \(k\) elements (or until empty). Each element is pushed once and popped at most once across any sequence. Thus, for any sequence of \(m\) operations, total pops \(\le\) total pushes \(\le m\) ⇒ overall cost is \(O(m)\), so amortized \(O(1)\) per op.</p>
+      <div class="formula">Aggregate proof: total cost \(\le\) #PUSH + #POP \(= O(m)\) ⇒ amortized \(O(1)\).</div>
+    </section>
+
+    <section class="section">
+      <h2>Union–Find (DSU) intuition</h2>
+      <p>With <em>union by rank/size</em> and <em>path compression</em>, a sequence of \(m\) operations on \(n\) elements runs in \(O(m\,\alpha(n))\), where \(\alpha\) is the inverse Ackermann function (\(\alpha(n) \le 5\) for any practical \(n\)). This is shown using a potential‑style analysis.</p>
+    </section>
+
+    <section class="section">
+      <h2>Interactive simulator: dynamic array push</h2>
+      <div class="demo">
+        <div class="panel">
+          <label for="ops"># of pushes (n):</label>
+          <input id="ops" type="range" min="1" max="100000" value="64" style="width:100%" />
+          <div class="meta">n = <span id="ops-val">64</span></div>
+
+          <label for="start">Initial capacity:</label>
+          <select id="start" style="width:100%">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4" selected>4</option>
+            <option value="8">8</option>
+          </select>
+
+          <p style="margin-top:.6rem"><button class="btn" id="run">Run simulation</button></p>
+          <p class="meta">Cost model: each insert = 1, resize copy = (#items copied).</p>
+        </div>
+        <div class="panel">
+          <h3 style="margin:.2rem 0 .6rem;">Summary</h3>
+          <ul>
+            <li>Total cost: <strong><span id="total">—</span></strong></li>
+            <li>Amortized cost (total/n): <strong><span id="avg">—</span></strong></li>
+            <li>Theoretical bound: <strong>≤ 3</strong> (when starting at 1)</li>
+          </ul>
+          <div class="meta">Resize events shown in the table below. Only first 20 steps are displayed for brevity.</div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:1rem; overflow:auto;">
+        <table id="table">
+          <thead>
+            <tr><th>i (push #)</th><th>capacity before</th><th>resized?</th><th>copies</th><th>cost this op</th><th>total so far</th></tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot><tr class="tfoot"><td colspan="4">Totals</td><td id="tfoot-cost">—</td><td id="tfoot-sum">—</td></tr></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Potential method (sketch)</h2>
+      <p>Define a potential \(\Phi\) on the structure. For dynamic arrays (start at capacity 1), one choice is</p>
+      <div class="formula">\(\Phi(D_i) = 2\,\text{size}_i - \text{capacity}_i\,\), clipped below at 0.</div>
+      <p>Then each non‑resize push has amortized cost 3, and a resize push has amortized cost bounded by a small constant, with credits paid from the drop in potential.</p>
+    </section>
+
+    <section class="section">
+      <h2>Pitfalls</h2>
+      <ul>
+        <li>Confusing amortized with <em>average over random inputs</em> — amortized is a worst‑case over all input sequences.</li>
+        <li>Using the wrong potential (must stay non‑negative and start at 0).</li>
+        <li>Counting memory allocation as free; keep a consistent unit‑cost model.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Next</h2>
+      <p>Return to <a href="../foundations.html">Foundations</a> or jump ahead to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> AlgoLearn · <a href="../index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simulator
+    const opsEl = document.getElementById('ops');
+    const opsVal = document.getElementById('ops-val');
+    const startEl = document.getElementById('start');
+    const runBtn = document.getElementById('run');
+    const tbody = document.querySelector('#table tbody');
+    const totalEl = document.getElementById('total');
+    const avgEl = document.getElementById('avg');
+    const tfootCost = document.getElementById('tfoot-cost');
+    const tfootSum = document.getElementById('tfoot-sum');
+
+    function simulate(n, startCap){
+      let size = 0;
+      let cap = startCap;
+      let total = 0;
+      const rows = [];
+      for(let i=1;i<=n;i++){
+        let copies = 0;
+        let resized = false;
+        if(size === cap){
+          // copy cap items, double capacity
+          copies = cap;
+          total += copies;
+          cap = cap*2;
+          resized = true;
+        }
+        // insert
+        total += 1;
+        size += 1;
+        rows.push({i, capBefore: resized ? cap/2 : cap, resized, copies, cost: copies + 1, total});
+      }
+      return {rows, total};
+    }
+
+    function format(n){ return n.toLocaleString(); }
+
+    function run(){
+      const n = Math.max(1, parseInt(opsEl.value, 10)||1);
+      const startCap = parseInt(startEl.value, 10);
+      opsVal.textContent = format(n);
+      const {rows, total} = simulate(n, startCap);
+      // summary
+      totalEl.textContent = format(total);
+      avgEl.textContent = (total/n).toFixed(3);
+      // table (first 20)
+      tbody.innerHTML = '';
+      const show = Math.min(20, rows.length);
+      let shownCost = 0; let shownSum = 0;
+      for(let k=0;k<show;k++){
+        const r = rows[k];
+        shownCost += r.cost; shownSum = r.total;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${r.i}</td><td>${format(r.capBefore)}</td><td>${r.resized? 'yes':''}</td><td>${format(r.copies)}</td><td>${format(r.cost)}</td><td>${format(r.total)}</td>`;
+        tbody.appendChild(tr);
+      }
+      tfootCost.textContent = format(shownCost) + (rows.length>show ? ' (first 20 ops)' : '');
+      tfootSum.textContent = format(shownSum) + (rows.length>show ? ' (first 20 ops)' : '');
+    }
+
+    opsEl.addEventListener('input', run);
+    runBtn.addEventListener('click', run);
+    // initial
+    run();
+  </script>
+</body>
+</html>
