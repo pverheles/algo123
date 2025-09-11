@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Core Algorithmic Paradigms</title>
+  <meta name="description" content="Brute Force, Divide & Conquer, Greedy, Dynamic Programming, Backtracking, and Randomized algorithms — definitions, when to use, pitfalls, examples, and an interactive coin change demo." />
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --border: rgba(255,255,255,.12);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+      --border: rgba(17,24,39,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%),
+                  radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container{ width: min(1100px, 92%); margin-inline: auto; }
+
+    /* Header */
+    .header{ position: sticky; top:0; z-index: 10; background: linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.3px; }
+    .brand-logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .nav a{ color:var(--text); text-decoration:none; opacity:.9; font-weight:600; }
+    .nav a:hover{ opacity:1; }
+    .links{ display:flex; gap:1.1rem; align-items:center; }
+    .ghost{ background:transparent; border:1px solid var(--border); padding:.5rem .9rem; border-radius:.7rem; }
+    .theme-toggle{ background:transparent; border:1px solid var(--border); color:var(--text); padding:.45rem .6rem; border-radius:.6rem; cursor:pointer; }
+
+    /* Hero */
+    .hero{ padding: 2.2rem 0 1.2rem; }
+    .breadcrumbs{ color:var(--muted); font-size:.92rem; }
+    .hero h1{ font-size: clamp(2rem, 4.5vw, 3rem); margin:.4rem 0 .6rem; }
+    .hero p{ color:var(--muted); max-width: 65ch; }
+
+    /* Layout */
+    .layout{ display:grid; grid-template-columns: 260px 1fr; gap:1.2rem; }
+    aside{ position:sticky; top:72px; align-self:start; background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .toc h3{ margin:.2rem 0 .4rem; font-size:1rem; }
+    .toc a{ color: var(--muted); text-decoration:none; display:block; padding:.25rem 0; }
+    .toc a:hover{ color: var(--text); }
+
+    /* Sections */
+    .section{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1.2rem; box-shadow: var(--shadow); margin-bottom:1rem; }
+    .section h2{ margin:.1rem 0 .4rem; font-size:1.25rem; }
+    .muted{ color: var(--muted); }
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background: var(--card); padding:.12rem .35rem; border-radius:.35rem; border:1px solid var(--border); }
+    .badge{ border:1px dashed var(--border); padding:.15rem .45rem; border-radius:999px; font-size:.8rem; color:var(--muted); }
+
+    .cards{ display:grid; grid-template-columns: repeat(2, 1fr); gap:.9rem; }
+    .card{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:.8rem 1rem; }
+
+    .footer{ padding:1.8rem 0; color:var(--muted); text-align:center; font-size:.95rem; }
+    .footer a{ color:var(--accent-2); text-decoration:none; }
+
+    .demo{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:1rem; }
+    .panel{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:1rem; }
+
+    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr; } aside{ position:relative; top:auto; } .cards, .grid-2{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="index.html">Home</a>
+        <a href="foundations.html">Foundations</a>
+        <a class="ghost" href="sorting.html">Next: Sorting & Searching →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="index.html" class="muted" style="text-decoration:none;">Curriculum</a> / Core Paradigms</div>
+    <h1>Core Algorithmic Paradigms</h1>
+    <p>Six foundational ways to design algorithms: <strong>Brute Force</strong>, <strong>Divide & Conquer</strong>, <strong>Greedy</strong>, <strong>Dynamic Programming</strong>, <strong>Backtracking</strong>, and <strong>Randomized</strong>. Learn when to use each, what to watch out for, and see examples.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Problem‑solving patterns</span>
+      <span class="badge">Trade‑offs</span>
+      <span class="badge">Examples</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#brute">Brute Force</a>
+        <a href="#divide">Divide & Conquer</a>
+        <a href="#greedy">Greedy</a>
+        <a href="#dp">Dynamic Programming</a>
+        <a href="#backtracking">Backtracking</a>
+        <a href="#randomized">Randomized</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Where to go next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="brute" class="section">
+        <h2>Brute Force</h2>
+        <p>Try all possibilities and pick the best or first that satisfies the condition.</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Search space is small</li><li>As a baseline to verify other methods</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>Linear search</li><li>Checking all permutations</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>Exponential blow‑up</li></ul></div>
+          <div class="card"><a href="paradigms/brute-force.html">Lesson: Brute Force →</a></div>
+        </div>
+      </section>
+
+      <section id="divide" class="section">
+        <h2>Divide & Conquer</h2>
+        <p>Split the problem into subproblems, solve them recursively, and combine results.</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Problem splits naturally</li><li>Combine step is efficient</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>Merge sort</li><li>Binary search</li><li>Closest pair of points</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>Expensive combine step</li><li>Unbalanced splits</li></ul></div>
+          <div class="card"><a href="paradigms/divide-and-conquer.html">Lesson: Divide & Conquer →</a></div>
+        </div>
+      </section>
+
+      <section id="greedy" class="section">
+        <h2>Greedy</h2>
+        <p>Build the solution step by step by making the locally optimal choice at each step.</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Greedy choice property holds</li><li>Optimal substructure</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>Interval scheduling</li><li>Huffman coding</li><li>Prim/Kruskal MST</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>Fails without proof of correctness</li><li>Counterexamples common</li></ul></div>
+          <div class="card"><a href="paradigms/greedy.html">Lesson: Greedy →</a></div>
+        </div>
+      </section>
+
+      <section id="dp" class="section">
+        <h2>Dynamic Programming</h2>
+        <p>Break problems into overlapping subproblems with optimal substructure and cache results (top‑down) or tabulate (bottom‑up).</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Overlapping subproblems</li><li>Optimal substructure</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>Knapsack</li><li>Longest common subsequence</li><li>Edit distance</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>State explosion</li><li>Incorrect transitions</li></ul></div>
+          <div class="card"><a href="paradigms/dp.html">Lesson: Dynamic Programming →</a></div>
+        </div>
+      </section>
+
+      <section id="backtracking" class="section">
+        <h2>Backtracking</h2>
+        <p>Build solutions incrementally; abandon partial solutions that cannot lead to a valid final answer.</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Constraint satisfaction</li><li>Combinatorial search</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>N‑Queens</li><li>Sudoku</li><li>Permutations with constraints</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>Poor pruning → exponential time</li></ul></div>
+          <div class="card"><a href="paradigms/backtracking.html">Lesson: Backtracking →</a></div>
+        </div>
+      </section>
+
+      <section id="randomized" class="section">
+        <h2>Randomized</h2>
+        <p>Use randomness to guide decisions; analyze expected performance or success probability.</p>
+        <div class="cards">
+          <div class="card"><strong>Use when</strong><ul><li>Adversarial inputs likely</li><li>Simpler expected analysis</li></ul></div>
+          <div class="card"><strong>Examples</strong><ul><li>Randomized quicksort</li><li>Monte Carlo primality test</li></ul></div>
+          <div class="card"><strong>Pitfalls</strong><ul><li>Las Vegas vs Monte Carlo confusion</li><li>Randomness quality matters</li></ul></div>
+          <div class="card"><a href="paradigms/randomized.html">Lesson: Randomized →</a></div>
+        </div>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: Greedy vs DP (Coin Change)</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="denoms">Denominations (comma‑separated):</label>
+            <input id="denoms" type="text" value="1,3,4" style="width:100%" />
+            <label for="amount" style="display:block;margin-top:.5rem;">Amount:</label>
+            <input id="amount" type="number" value="6" min="0" style="width:100%" />
+            <p style="margin-top:.6rem"><button class="ghost" id="run">Run</button></p>
+            <p class="muted">Greedy picks the largest coin ≤ remaining amount; DP computes optimal #coins. Try denominations like <span class="kbd">1,3,4</span> and amount <span class="kbd">6</span> to see greedy fail.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Results</h3>
+            <div id="out-greedy"></div>
+            <div id="out-dp" style="margin-top:.6rem"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Where to go next</h2>
+        <p>Move on to <a href="sorting.html">Sorting & Searching</a> or dive into specific lessons: <a href="paradigms/greedy.html">Greedy</a>, <a href="paradigms/dp.html">Dynamic Programming</a>, <a href="paradigms/backtracking.html">Backtracking</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Algo123 · <a href="index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Coin change demo
+    function greedyChange(denoms, amount){
+      denoms = [...denoms].sort((a,b)=>b-a);
+      const used = [];
+      let remain = amount;
+      for(const d of denoms){
+        while(remain >= d){ used.push(d); remain -= d; }
+      }
+      return {count: used.length, coins: used, possible: remain===0};
+    }
+
+    function dpChange(denoms, amount){
+      const INF = 1e9; const dp = Array(amount+1).fill(INF); const par = Array(amount+1).fill(-1);
+      dp[0]=0;
+      for(let a=1;a<=amount;a++){
+        for(const d of denoms){
+          if(a-d>=0 && dp[a-d]+1 < dp[a]){ dp[a]=dp[a-d]+1; par[a]=d; }
+        }
+      }
+      if(dp[amount]===INF) return {count: Infinity, coins: [], possible:false};
+      const coins=[]; let cur=amount;
+      while(cur>0){ coins.push(par[cur]); cur-=par[cur]; }
+      return {count: dp[amount], coins, possible:true};
+    }
+
+    function parseDenoms(str){
+      return str.split(',').map(s=>parseInt(s.trim(),10)).filter(n=>Number.isFinite(n) && n>0);
+    }
+
+    function run(){
+      const denoms = parseDenoms(document.getElementById('denoms').value);
+      const amount = Math.max(0, parseInt(document.getElementById('amount').value,10)||0);
+      const outG = document.getElementById('out-greedy');
+      const outD = document.getElementById('out-dp');
+      if(!denoms.length){ outG.textContent='Please enter valid denominations.'; outD.textContent=''; return; }
+      const g = greedyChange(denoms, amount);
+      const d = dpChange(denoms, amount);
+      outG.innerHTML = `<strong>Greedy:</strong> ${g.possible? g.count+' coins ['+g.coins.join(', ')+']' : 'no solution'} (largest-first)`;
+      outD.innerHTML = `<strong>DP (optimal):</strong> ${d.possible? d.count+' coins ['+d.coins.join(', ')+']' : 'no solution'}`;
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    run();
+  </script>
+</body>
+</html>
