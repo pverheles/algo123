@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Brute Force</title>
+  <meta name="description" content="Brute force (exhaustive search): definition, when to use, complexity, enumeration patterns, pruning, and interactive subset‑sum demo." />
+  <style>
+    :root{
+      --bg: #0f1226;
+      --bg-soft: #141738;
+      --card: rgba(255,255,255,0.06);
+      --text: #f4f6fb;
+      --muted: #b7c0d6;
+      --accent: #7c9cff;
+      --accent-2: #5ce1e6;
+      --ring: rgba(124,156,255,.35);
+      --shadow: 0 10px 30px rgba(0,0,0,.3);
+      --border: rgba(255,255,255,.12);
+    }
+    [data-theme="light"]{
+      --bg: #f7f9ff;
+      --bg-soft: #ffffff;
+      --card: rgba(22,26,57,0.06);
+      --text: #121325;
+      --muted: #4a4f70;
+      --accent: #3758f9;
+      --accent-2: #0eb5bd;
+      --ring: rgba(55,88,249,.25);
+      --shadow: 0 10px 25px rgba(17, 24, 39,.08);
+      --border: rgba(17,24,39,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%),
+                  radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .container{ width: min(1100px, 92%); margin-inline: auto; }
+
+    /* Header */
+    .header{ position: sticky; top:0; z-index: 10; background: linear-gradient(135deg, rgba(124,156,255,.2), rgba(92,225,230,.12)); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+    .nav{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding: .9rem 0; }
+    .brand{ display:flex; align-items:center; gap:.75rem; font-weight:800; letter-spacing:.3px; }
+    .brand-logo{ width:36px; height:36px; display:grid; place-items:center; border-radius:10px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--shadow); }
+    .nav a{ color:var(--text); text-decoration:none; opacity:.9; font-weight:600; }
+    .nav a:hover{ opacity:1; }
+    .links{ display:flex; gap:1.1rem; align-items:center; }
+    .ghost{ background:transparent; border:1px solid var(--border); padding:.5rem .9rem; border-radius:.7rem; }
+    .theme-toggle{ background:transparent; border:1px solid var(--border); color:var(--text); padding:.45rem .6rem; border-radius:.6rem; cursor:pointer; }
+
+    /* Hero */
+    .hero{ padding: 2.2rem 0 1.2rem; }
+    .breadcrumbs{ color:var(--muted); font-size:.92rem; }
+    .hero h1{ font-size: clamp(2rem, 4.5vw, 3rem); margin:.4rem 0 .6rem; }
+    .hero p{ color:var(--muted); max-width: 65ch; }
+
+    /* Layout */
+    .layout{ display:grid; grid-template-columns: 260px 1fr; gap:1.2rem; }
+    aside{ position:sticky; top:72px; align-self:start; background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .toc h3{ margin:.2rem 0 .4rem; font-size:1rem; }
+    .toc a{ color: var(--muted); text-decoration:none; display:block; padding:.25rem 0; }
+    .toc a:hover{ color: var(--text); }
+
+    /* Sections */
+    .section{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1.2rem; box-shadow: var(--shadow); margin-bottom:1rem; }
+    .section h2{ margin:.1rem 0 .4rem; font-size:1.25rem; }
+    .muted{ color: var(--muted); }
+    .kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; background: var(--card); padding:.12rem .35rem; border-radius:.35rem; border:1px solid var(--border); }
+    .badge{ border:1px dashed var(--border); padding:.15rem .45rem; border-radius:999px; font-size:.8rem; color:var(--muted); }
+
+    .cards{ display:grid; grid-template-columns: repeat(2, 1fr); gap:.9rem; }
+    .card{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:.8rem 1rem; }
+
+    .footer{ padding:1.8rem 0; color:var(--muted); text-align:center; font-size:.95rem; }
+    .footer a{ color:var(--accent-2); text-decoration:none; }
+
+    .demo{ background: var(--bg-soft); border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow: var(--shadow); }
+    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:1rem; }
+    .panel{ background: var(--card); border:1px solid var(--border); border-radius:.9rem; padding:1rem; }
+
+    @media (max-width: 980px){ .layout{ grid-template-columns: 1fr; } aside{ position:relative; top:auto; } .cards, .grid-2{ grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../core-paradigms.html">Core Paradigms</a>
+        <a class="ghost" href="dp.html">Next: Dynamic Programming →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../core-paradigms.html" class="muted" style="text-decoration:none;">Core Paradigms</a> / Brute Force</div>
+    <h1>Brute Force (Exhaustive Search)</h1>
+    <p>Try all possibilities and pick the first/optimal valid solution. Simple, correct (when feasible), and a great baseline—but beware exponential blow‑ups.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Baseline</span>
+      <span class="badge">Search Space</span>
+      <span class="badge">Pruning</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition</a>
+        <a href="#when">When to use</a>
+        <a href="#complexity">Complexity & Limits</a>
+        <a href="#patterns">Enumeration Patterns</a>
+        <a href="#pruning">Pruning & Heuristics</a>
+        <a href="#examples">Examples</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition</h2>
+        <p><strong>Brute force</strong> (or exhaustive search) systematically enumerates the entire search space and checks each candidate. It guarantees finding an answer if one exists (and proving none exists if not).</p>
+      </section>
+
+      <section id="when" class="section">
+        <h2>When to use</h2>
+        <div class="cards">
+          <div class="card"><strong>Small search space</strong><p class="muted">n is tiny or constraints bound the possibilities.</p></div>
+          <div class="card"><strong>Baseline / verification</strong><p class="muted">Compare correctness of smarter algorithms.</p></div>
+          <div class="card"><strong>Any‑time algorithm</strong><p class="muted">Can stop early when a valid solution is found.</p></div>
+          <div class="card"><strong>Prototype</strong><p class="muted">Quick to implement during problem exploration.</p></div>
+        </div>
+      </section>
+
+      <section id="complexity" class="section">
+        <h2>Complexity & Limits</h2>
+        <ul>
+          <li>Subsets: <span class="kbd">2^n</span></li>
+          <li>Permutations: <span class="kbd">n!</span></li>
+          <li>k‑combinations: <span class="kbd">C(n,k)</span></li>
+          <li>Exponential growth quickly becomes infeasible. Even at <span class="kbd">n=30</span>, <span class="kbd">2^n ≈ 1B</span> candidates.</li>
+        </ul>
+      </section>
+
+      <section id="patterns" class="section">
+        <h2>Enumeration Patterns</h2>
+        <div class="cards">
+          <div class="card"><strong>Bitmasking</strong><p class="muted">Loop over <span class="kbd">mask ∈ [0, 2^n)</span> to enumerate subsets.</p></div>
+          <div class="card"><strong>Backtracking</strong><p class="muted">Depth‑first enumeration with partial solutions; pairs naturally with pruning.</p></div>
+          <div class="card"><strong>Permutation generation</strong><p class="muted">Next‑permutation / Heap’s algorithm for all orderings.</p></div>
+          <div class="card"><strong>Meet‑in‑the‑middle</strong><p class="muted">Split set into halves to reduce <span class="kbd">2^n → 2^{n/2}</span> (with extra memory).</p></div>
+        </div>
+      </section>
+
+      <section id="pruning" class="section">
+        <h2>Pruning & Heuristics</h2>
+        <ul>
+          <li><strong>Early exit:</strong> return when a goal is met.</li>
+          <li><strong>Bounding:</strong> skip candidates that cannot beat the best known (branch‑and‑bound).</li>
+          <li><strong>Feasibility checks:</strong> reject partial solutions violating constraints.</li>
+          <li><strong>Ordering:</strong> try promising options first to find good solutions earlier.</li>
+        </ul>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <div class="cards">
+          <div class="card"><strong>Linear search</strong><p class="muted">Scan until you find the target.</p></div>
+          <div class="card"><strong>Password cracking</strong><p class="muted">Try all candidates (feasible only with small alphabets/lengths).</p></div>
+          <div class="card"><strong>Traveling Salesperson (TSP)</strong><p class="muted">Try all permutations (factorial time) — practical only for tiny n.</p></div>
+          <div class="card"><strong>Subset Sum</strong><p class="muted">Enumerate all subsets to check if any sums to target.</p></div>
+        </div>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: Subset Sum (Brute Force)</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="arr">Numbers (comma‑separated, ≤ 18 items recommended):</label>
+            <input id="arr" type="text" value="3, 34, 4, 12, 5, 2" style="width:100%" />
+            <label for="target" style="display:block;margin-top:.5rem;">Target:</label>
+            <input id="target" type="number" value="9" style="width:100%" />
+            <p style="margin-top:.6rem"><button class="ghost" id="run">Run brute force</button></p>
+            <p class="muted">Complexity is <span class="kbd">O(2^n)</span>. Keep n small.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Result</h3>
+            <div id="result">—</div>
+            <div id="explain" class="muted" style="margin-top:.4rem"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Next</h2>
+        <p>Continue with <a href="divide-and-conquer.html">Divide & Conquer</a> or jump to <a href="greedy.html">Greedy</a> to see when local choices can be provably optimal.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Algo123 · <a href="../index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function parseNums(s){
+      return s.split(',').map(x=>parseFloat(x.trim())).filter(x=>Number.isFinite(x));
+    }
+
+    function subsetSumBrute(nums, target){
+      const n = nums.length;
+      const limit = 1 << n; // n <= 24 recommended
+      for(let mask=0; mask<limit; mask++){
+        let sum=0; const subset=[];
+        for(let i=0;i<n;i++) if(mask & (1<<i)){ sum += nums[i]; subset.push(nums[i]); }
+        if(Math.abs(sum - target) < 1e-9){ return {found:true, subset}; }
+      }
+      return {found:false, subset:[]};
+    }
+
+    function run(){
+      const nums = parseNums(document.getElementById('arr').value);
+      const target = parseFloat(document.getElementById('target').value);
+      const res = document.getElementById('result');
+      const ex = document.getElementById('explain');
+      if(!nums.length || !Number.isFinite(target)){
+        res.textContent = 'Please enter valid numbers and a numeric target.';
+        ex.textContent = '';
+        return;
+      }
+      if(nums.length > 22){
+        res.textContent = `Warning: n=${nums.length} may be too large for brute force here (2^n subsets). Try ≤ 22.`;
+        ex.textContent = '';
+        return;
+      }
+      const t0 = performance.now();
+      const out = subsetSumBrute(nums, target);
+      const t1 = performance.now();
+      if(out.found){
+        res.innerHTML = `<strong>Found subset:</strong> [${out.subset.join(', ')}]`;
+      } else {
+        res.innerHTML = '<strong>No subset found.</strong>';
+      }
+      ex.textContent = `Tried up to 2^n = ${Math.pow(2, nums.length).toLocaleString()} subsets in ${(t1 - t0).toFixed(2)} ms.`;
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    // initial output
+    run();
+  </script>
+</body>
+</html>
