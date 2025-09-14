@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Dynamic Programming</title>
+  <meta name="description" content="Dynamic Programming: optimal substructure, overlapping subproblems, memoization vs tabulation, classic examples (LCS, Edit Distance, Knapsack), pitfalls, and an interactive edit-distance table." />
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <style>
+    :root{ --bg:#0f1226; --bg-soft:#141738; --card:rgba(255,255,255,0.06); --text:#f4f6fb; --muted:#b7c0d6; --accent:#7c9cff; --accent-2:#5ce1e6; --ring:rgba(124,156,255,.35); --shadow:0 10px 30px rgba(0,0,0,.3); --border:rgba(255,255,255,.12); }
+    [data-theme="light"]{ --bg:#f7f9ff; --bg-soft:#ffffff; --card:rgba(22,26,57,0.06); --text:#121325; --muted:#4a4f70; --accent:#3758f9; --accent-2:#0eb5bd; --ring:rgba(55,88,249,.25); --shadow:0 10px 25px rgba(17,24,39,.08); --border:rgba(17,24,39,.12); }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui; background:radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%), radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%), var(--bg); color:var(--text); line-height:1.6}
+    .container{width:min(1100px,92%);margin-inline:auto}
+    .header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,rgba(124,156,255,.2),rgba(92,225,230,.12));border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:800;letter-spacing:.3px}
+    .brand-logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    .nav a{color:var(--text);text-decoration:none;opacity:.9;font-weight:600}
+    .nav a:hover{opacity:1}
+    .links{display:flex;gap:1.1rem;align-items:center}
+    .ghost{background:transparent;border:1px solid var(--border);padding:.5rem .9rem;border-radius:.7rem}
+    .theme-toggle{background:transparent;border:1px solid var(--border);color:var(--text);padding:.45rem .6rem;border-radius:.6rem;cursor:pointer}
+    .hero{padding:2.2rem 0 1.2rem}
+    .breadcrumbs{color:var(--muted);font-size:.92rem}
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem);margin:.4rem 0 .6rem}
+    .hero p{color:var(--muted);max-width:65ch}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:1.2rem}
+    aside{position:sticky;top:72px;align-self:start;background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .toc h3{margin:.2rem 0 .4rem;font-size:1rem}
+    .toc a{color:var(--muted);text-decoration:none;display:block;padding:.25rem 0}
+    .toc a:hover{color:var(--text)}
+    .section{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem}
+    .section h2{margin:.1rem 0 .4rem;font-size:1.25rem}
+    .muted{color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);padding:.12rem .35rem;border-radius:.35rem;border:1px solid var(--border)}
+    .badge{border:1px dashed var(--border);padding:.15rem .45rem;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:.8rem 1rem}
+    pre{background:var(--bg-soft);border:1px dashed var(--border);border-radius:.7rem;padding:.9rem;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .demo{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1rem}
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid var(--border);padding:.3rem .4rem;text-align:center}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}aside{position:relative;top:auto}.cards,.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../core-paradigms.html">Core Paradigms</a>
+        <a class="ghost" href="backtracking.html">Next: Backtracking →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../core-paradigms.html" class="muted" style="text-decoration:none;">Core Paradigms</a> / Dynamic Programming</div>
+    <h1>Dynamic Programming</h1>
+    <p>Break a problem into overlapping subproblems with optimal substructure, then solve each subproblem once and reuse the results.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Optimal substructure</span>
+      <span class="badge">Memoization & Tabulation</span>
+      <span class="badge">Proof by induction</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition</a>
+        <a href="#detect">How to detect DP</a>
+        <a href="#memo-tab">Memoization vs Tabulation</a>
+        <a href="#examples">Examples</a>
+        <a href="#pitfalls">Pitfalls</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition</h2>
+        <p><strong>Dynamic Programming (DP)</strong> solves problems with <em>overlapping subproblems</em> and <em>optimal substructure</em>. It stores results of subproblems to avoid recomputation.</p>
+      </section>
+
+      <section id="detect" class="section">
+        <h2>How to detect DP</h2>
+        <ul>
+          <li>Subproblems repeat during a naive recursion (overlap).</li>
+          <li>Optimal solution can be expressed via optimal solutions to subproblems (substructure).</li>
+          <li>State can be defined with a few parameters; transitions combine smaller states.</li>
+        </ul>
+      </section>
+
+      <section id="memo-tab" class="section">
+        <h2>Memoization vs Tabulation</h2>
+        <div class="cards">
+          <div class="card"><strong>Memoization</strong><p class="muted">Top‑down recursion + cache. Only states that are needed are computed.</p></div>
+          <div class="card"><strong>Tabulation</strong><p class="muted">Bottom‑up table fill. Iterative; good for tight control over order and memory.</p></div>
+        </div>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <div class="cards">
+          <div class="card"><strong>Knapsack (0/1)</strong><p>Max value with capacity constraint via DP on <span class="kbd">i, w</span>.</p></div>
+          <div class="card"><strong>LCS</strong><p>Longest common subsequence via DP on <span class="kbd">i, j</span>.</p></div>
+          <div class="card"><strong>Edit distance</strong><p>Levenshtein distance via DP on <span class="kbd">i, j</span>.</p></div>
+          <div class="card"><strong>Coin change</strong><p>Min coins to form amount via DP on <span class="kbd">a</span>.</p></div>
+        </div>
+      </section>
+
+      <section id="pitfalls" class="section">
+        <h2>Pitfalls</h2>
+        <ul>
+          <li>State explosion: too many parameters → infeasible table size.</li>
+          <li>Wrong transition/order: referencing states not yet computed.</li>
+          <li>Forgetting base cases or initialization.</li>
+        </ul>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: Edit Distance (Levenshtein)</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="s1">String A:</label>
+            <input id="s1" type="text" value="kitten" style="width:100%" />
+            <label for="s2" style="display:block;margin-top:.5rem;">String B:</label>
+            <input id="s2" type="text" value="sitting" style="width:100%" />
+            <p style="margin-top:.6rem"><button class="ghost" id="run">Compute table</button></p>
+            <p class="muted">Cost model: insert/delete/substitute = 1.</p>
+          </div>
+          <div class="panel" style="overflow:auto">
+            <h3 style="margin-top:.2rem;">DP Table</h3>
+            <div id="table-wrap"></div>
+            <div id="summary" class="muted" style="margin-top:.4rem"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Next</h2>
+        <p>Continue with <a href="backtracking.html">Backtracking</a> or return to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" style="text-align:center;color:var(--muted);padding:1.8rem 0;font-size:.95rem;">
+    <p>© <span id="year"></span> Algo123 · <a href="../index.html" style="color:var(--accent-2);text-decoration:none;">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Edit distance demo
+    function buildTable(a,b){
+      const n=a.length, m=b.length;
+      const dp=Array.from({length:n+1}, ()=>Array(m+1).fill(0));
+      for(let i=0;i<=n;i++) dp[i][0]=i;
+      for(let j=0;j<=m;j++) dp[0][j]=j;
+      for(let i=1;i<=n;i++){
+        for(let j=1;j<=m;j++){
+          const cost = a[i-1]===b[j-1] ? 0 : 1;
+          dp[i][j] = Math.min(
+            dp[i-1][j] + 1,        // delete
+            dp[i][j-1] + 1,        // insert
+            dp[i-1][j-1] + cost    // substitute
+          );
+        }
+      }
+      return dp;
+    }
+
+    function renderTable(a,b,dp){
+      const n=a.length, m=b.length;
+      let html = '<table><thead><tr><th></th><th></th>';
+      for(let j=0;j<m;j++){ html += `<th>${b[j]}</th>`; }
+      html += '</tr></thead><tbody>';
+      for(let i=0;i<=n;i++){
+        html += '<tr>';
+        html += `<th>${i===0?'':a[i-1]}</th>`;
+        for(let j=0;j<=m;j++){
+          html += `<td>${dp[i][j]}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function run(){
+      const a = document.getElementById('s1').value;
+      const b = document.getElementById('s2').value;
+      if(a.length>30 || b.length>30){
+        document.getElementById('table-wrap').innerHTML = 'Please keep strings ≤ 30 chars for this demo.';
+        document.getElementById('summary').textContent = '';
+        return;
+      }
+      const dp = buildTable(a,b);
+      document.getElementById('table-wrap').innerHTML = renderTable(a,b,dp);
+      document.getElementById('summary').textContent = `Edit distance d("${a}", "${b}") = ${dp[a.length][b.length]}.`;
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    run();
+  </script>
+</body>
+</html>

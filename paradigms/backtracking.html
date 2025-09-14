@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Backtracking</title>
+  <meta name="description" content="Backtracking: systematic search with pruning for constraint problems (N‑Queens, Sudoku). When to use, design template, pruning/bounding, pitfalls, and an interactive N‑Queens visualizer." />
+  <style>
+    :root{ --bg:#0f1226; --bg-soft:#141738; --card:rgba(255,255,255,0.06); --text:#f4f6fb; --muted:#b7c0d6; --accent:#7c9cff; --accent-2:#5ce1e6; --ring:rgba(124,156,255,.35); --shadow:0 10px 30px rgba(0,0,0,.3); --border:rgba(255,255,255,.12); }
+    [data-theme="light"]{ --bg:#f7f9ff; --bg-soft:#ffffff; --card:rgba(22,26,57,0.06); --text:#121325; --muted:#4a4f70; --accent:#3758f9; --accent-2:#0eb5bd; --ring:rgba(55,88,249,.25); --shadow:0 10px 25px rgba(17,24,39,.08); --border:rgba(17,24,39,.12); }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui; background:radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%), radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%), var(--bg); color:var(--text); line-height:1.6}
+    .container{width:min(1100px,92%);margin-inline:auto}
+    .header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,rgba(124,156,255,.2),rgba(92,225,230,.12));border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:800;letter-spacing:.3px}
+    .brand-logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    .nav a{color:var(--text);text-decoration:none;opacity:.9;font-weight:600}
+    .nav a:hover{opacity:1}
+    .links{display:flex;gap:1.1rem;align-items:center}
+    .ghost{background:transparent;border:1px solid var(--border);padding:.5rem .9rem;border-radius:.7rem}
+    .theme-toggle{background:transparent;border:1px solid var(--border);color:var(--text);padding:.45rem .6rem;border-radius:.6rem;cursor:pointer}
+    .hero{padding:2.2rem 0 1.2rem}
+    .breadcrumbs{color:var(--muted);font-size:.92rem}
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem);margin:.4rem 0 .6rem}
+    .hero p{color:var(--muted);max-width:65ch}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:1.2rem}
+    aside{position:sticky;top:72px;align-self:start;background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .toc h3{margin:.2rem 0 .4rem;font-size:1rem}
+    .toc a{color:var(--muted);text-decoration:none;display:block;padding:.25rem 0}
+    .toc a:hover{color:var(--text)}
+    .section{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem}
+    .section h2{margin:.1rem 0 .4rem;font-size:1.25rem}
+    .muted{color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);padding:.12rem .35rem;border-radius:.35rem;border:1px solid var(--border)}
+    .badge{border:1px dashed var(--border);padding:.15rem .45rem;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:.8rem 1rem}
+    pre{background:var(--bg-soft);border:1px dashed var(--border);border-radius:.7rem;padding:.9rem;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .demo{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1rem}
+    .board{display:grid;grid-template-columns:repeat(8,32px);gap:2px;}
+    .cell{width:32px;height:32px;display:grid;place-items:center;border-radius:6px;background:var(--card);border:1px solid var(--border);font-size:18px}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}aside{position:relative;top:auto}.cards,.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../core-paradigms.html">Core Paradigms</a>
+        <a class="ghost" href="randomized.html">Next: Randomized →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../core-paradigms.html" class="muted" style="text-decoration:none;">Core Paradigms</a> / Backtracking</div>
+    <h1>Backtracking</h1>
+    <p>Systematic search that builds candidate solutions incrementally and abandons ("backtracks") from dead ends using feasibility checks and bounds.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Constraint solving</span>
+      <span class="badge">Feasibility & Bounds</span>
+      <span class="badge">Search trees</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition</a>
+        <a href="#template">Design Template</a>
+        <a href="#pruning">Pruning & Bounding</a>
+        <a href="#examples">Examples</a>
+        <a href="#pitfalls">Pitfalls</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition</h2>
+        <p><strong>Backtracking</strong> performs depth‑first search over the solution space, rejecting any partial assignment that cannot possibly extend to a full solution.</p>
+      </section>
+
+      <section id="template" class="section">
+        <h2>Design Template</h2>
+        <pre><code>BACKTRACK(state):
+  if is_complete(state):
+    report_solution(state)
+    return
+  for choice in ordered_choices(state):
+    if feasible(state, choice):
+      apply(state, choice)
+      BACKTRACK(state)
+      undo(state, choice)
+</code></pre>
+      </section>
+
+      <section id="pruning" class="section">
+        <h2>Pruning & Bounding</h2>
+        <ul>
+          <li><strong>Feasibility checks:</strong> reject partial states that violate constraints.</li>
+          <li><strong>Bounds:</strong> stop exploring if even the best case cannot beat current best.</li>
+          <li><strong>Variable/Value ordering:</strong> choose hard variables first; try promising values early.</li>
+        </ul>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <div class="cards">
+          <div class="card"><strong>N‑Queens</strong><p>Place N queens on an N×N board with no conflicts.</p></div>
+          <div class="card"><strong>Sudoku solver</strong><p>Fill digits with row/col/box constraints.</p></div>
+          <div class="card"><strong>Permutation with constraints</strong><p>Enumerate feasible arrangements only.</p></div>
+          <div class="card"><strong>Subset problems</strong><p>Branch‑and‑bound for knapsack variants.</p></div>
+        </div>
+      </section>
+
+      <section id="pitfalls" class="section">
+        <h2>Pitfalls</h2>
+        <ul>
+          <li>Weak pruning → exponential blow‑ups.</li>
+          <li>Poor ordering → explores large unpromising subtrees.</li>
+          <li>Not caching subproblems that repeat (consider DP/bitmasking hybrids).</li>
+        </ul>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: N‑Queens</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="n">Board size N (4–12 recommended):</label>
+            <input id="n" type="number" value="8" min="4" max="13" step="1" style="width:100%" />
+            <p style="margin-top:.6rem"><button class="ghost" id="solve">Solve</button></p>
+            <p class="muted">DFS with column placements and diagonal conflict checks. Shows one solution (if exists).</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Board</h3>
+            <div id="board" class="board" aria-live="polite"></div>
+            <div id="stats" class="muted" style="margin-top:.4rem;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Next</h2>
+        <p>Continue with <a href="randomized.html">Randomized</a> or return to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" style="text-align:center;color:var(--muted);padding:1.8rem 0;font-size:.95rem;">
+    <p>© <span id="year"></span> Algo123 · <a href="../index.html" style="color:var(--accent-2);text-decoration:none;">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // N-Queens solver (one solution)
+    function solveNQueens(N){
+      const cols = Array(N).fill(false);
+      const d1 = Array(2*N).fill(false); // r-c offset by N
+      const d2 = Array(2*N).fill(false); // r+c
+      const pos = Array(N).fill(-1);
+      let nodes = 0; let found=false;
+      function dfs(r){
+        if(r===N){found=true;return true;}
+        for(let c=0;c<N;c++){
+          const id1 = r-c+N, id2 = r+c;
+          nodes++;
+          if(!cols[c] && !d1[id1] && !d2[id2]){
+            cols[c]=d1[id1]=d2[id2]=true; pos[r]=c;
+            if(dfs(r+1)) return true;
+            cols[c]=d1[id1]=d2[id2]=false; pos[r]=-1;
+          }
+        }
+        return false;
+      }
+      dfs(0);
+      return {pos, nodes, found};
+    }
+
+    function renderBoard(N, pos){
+      const board = document.getElementById('board');
+      board.style.gridTemplateColumns = `repeat(${N}, 32px)`;
+      board.innerHTML='';
+      for(let r=0;r<N;r++){
+        for(let c=0;c<N;c++){
+          const cell=document.createElement('div');
+          cell.className='cell';
+          const dark = (r+c)%2===1; cell.style.background = dark? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)';
+          if(pos[r]===c){ cell.textContent='♛'; }
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function run(){
+      const N = Math.max(4, Math.min(13, parseInt(document.getElementById('n').value,10)||8));
+      const t0=performance.now();
+      const ans=solveNQueens(N);
+      const t1=performance.now();
+      renderBoard(N, ans.pos);
+      const stats = document.getElementById('stats');
+      stats.textContent = ans.found ? `Found one solution in ${(t1-t0).toFixed(2)} ms; nodes explored ≈ ${ans.nodes.toLocaleString()}.` : 'No solution.';
+    }
+
+    document.getElementById('solve').addEventListener('click', run);
+    run();
+  </script>
+</body>
+</html>

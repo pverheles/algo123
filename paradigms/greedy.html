@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Greedy Algorithms</title>
+  <meta name="description" content="Greedy algorithms: definition, when they work, proofs (exchange/cut), classic examples (interval scheduling, Huffman, MST), pitfalls, and an interactive interval‑scheduling demo." />
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <style>
+    :root{ --bg:#0f1226; --bg-soft:#141738; --card:rgba(255,255,255,0.06); --text:#f4f6fb; --muted:#b7c0d6; --accent:#7c9cff; --accent-2:#5ce1e6; --ring:rgba(124,156,255,.35); --shadow:0 10px 30px rgba(0,0,0,.3); --border:rgba(255,255,255,.12); }
+    [data-theme="light"]{ --bg:#f7f9ff; --bg-soft:#ffffff; --card:rgba(22,26,57,0.06); --text:#121325; --muted:#4a4f70; --accent:#3758f9; --accent-2:#0eb5bd; --ring:rgba(55,88,249,.25); --shadow:0 10px 25px rgba(17,24,39,.08); --border:rgba(17,24,39,.12); }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui; background:radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%), radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%), var(--bg); color:var(--text); line-height:1.6}
+    .container{width:min(1100px,92%);margin-inline:auto}
+    .header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,rgba(124,156,255,.2),rgba(92,225,230,.12));border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:800;letter-spacing:.3px}
+    .brand-logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    .nav a{color:var(--text);text-decoration:none;opacity:.9;font-weight:600}
+    .nav a:hover{opacity:1}
+    .links{display:flex;gap:1.1rem;align-items:center}
+    .ghost{background:transparent;border:1px solid var(--border);padding:.5rem .9rem;border-radius:.7rem}
+    .theme-toggle{background:transparent;border:1px solid var(--border);color:var(--text);padding:.45rem .6rem;border-radius:.6rem;cursor:pointer}
+    .hero{padding:2.2rem 0 1.2rem}
+    .breadcrumbs{color:var(--muted);font-size:.92rem}
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem);margin:.4rem 0 .6rem}
+    .hero p{color:var(--muted);max-width:65ch}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:1.2rem}
+    aside{position:sticky;top:72px;align-self:start;background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .toc h3{margin:.2rem 0 .4rem;font-size:1rem}
+    .toc a{color:var(--muted);text-decoration:none;display:block;padding:.25rem 0}
+    .toc a:hover{color:var(--text)}
+    .section{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem}
+    .section h2{margin:.1rem 0 .4rem;font-size:1.25rem}
+    .muted{color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);padding:.12rem .35rem;border-radius:.35rem;border:1px solid var(--border)}
+    .badge{border:1px dashed var(--border);padding:.15rem .45rem;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:.8rem 1rem}
+    pre{background:var(--bg-soft);border:1px dashed var(--border);border-radius:.7rem;padding:.9rem;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .demo{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1rem}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}aside{position:relative;top:auto}.cards,.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../core-paradigms.html">Core Paradigms</a>
+        <a class="ghost" href="dp.html">Next: Dynamic Programming →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../core-paradigms.html" class="muted" style="text-decoration:none;">Core Paradigms</a> / Greedy</div>
+    <h1>Greedy Algorithms</h1>
+    <p>Build a solution step‑by‑step, choosing the locally optimal option each time. Works when the problem has <em>greedy choice</em> and <em>optimal substructure</em>.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Greedy choice</span>
+      <span class="badge">Exchange/Cut proofs</span>
+      <span class="badge">Classic problems</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition</a>
+        <a href="#when">When it works</a>
+        <a href="#proofs">Proof techniques</a>
+        <a href="#examples">Examples</a>
+        <a href="#pitfalls">Pitfalls</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition</h2>
+        <p>A <strong>greedy algorithm</strong> iteratively makes the best local choice with the hope of reaching a global optimum. Unlike DP, it does <em>not</em> reconsider earlier choices.</p>
+      </section>
+
+      <section id="when" class="section">
+        <h2>When it works</h2>
+        <ul>
+          <li><strong>Greedy choice property</strong>: there exists an optimal solution that begins with a locally optimal choice.</li>
+          <li><strong>Optimal substructure</strong>: after making a choice, the remaining subproblem is of the same form.</li>
+          <li><strong>Matroid structure</strong> (advanced): independence systems where greedy with the right ordering is optimal.</li>
+        </ul>
+      </section>
+
+      <section id="proofs" class="section">
+        <h2>Proof techniques</h2>
+        <div class="cards">
+          <div class="card"><strong>Exchange argument</strong><p class="muted">Transform any optimal solution into the greedy one step‑by‑step without hurting optimality.</p></div>
+          <div class="card"><strong>Cut property (graphs)</strong><p class="muted">The lightest edge crossing any cut is safe to add for MST (Prim/Kruskal).</p></div>
+          <div class="card"><strong>Greedy stays feasible</strong><p class="muted">Show each choice preserves constraints and progresses toward completion.</p></div>
+        </div>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <div class="cards">
+          <div class="card"><strong>Interval scheduling</strong><p>Pick max non‑overlapping intervals by <em>earliest finishing time</em>.</p></div>
+          <div class="card"><strong>Huffman coding</strong><p>Greedy merging of two least‑frequent symbols minimizes total code length.</p></div>
+          <div class="card"><strong>MST (Prim/Kruskal)</strong><p>Add the safe lightest edge; cut/cycle properties prove correctness.</p></div>
+          <div class="card"><strong>Activity/resource allocation</strong><p>Variants with weights may need DP (e.g., <em>weighted</em> interval scheduling).</p></div>
+        </div>
+      </section>
+
+      <section id="pitfalls" class="section">
+        <h2>Pitfalls</h2>
+        <ul>
+          <li>Assuming greedy is optimal without proof (e.g., coin change with denominations 1,3,4 and amount 6).</li>
+          <li>Local optimum can block the global optimum when structure assumptions fail.</li>
+          <li>Weighted versions often break simple greedy rules; consider DP.</li>
+        </ul>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: Interval Scheduling</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="intervals">Intervals [start,end) (comma‑separated lines):</label>
+            <textarea id="intervals" style="width:100%;height:140px">1 4
+3 5
+0 6
+5 7
+3 9
+5 9
+6 10
+8 11
+8 12
+2 14
+12 16</textarea>
+            <p style="margin-top:.6rem"><button class="ghost" id="run">Run Greedy + Optimal</button></p>
+            <p class="muted">Greedy: choose intervals by increasing finish time. Optimal (DP) computed for small n to verify.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Result</h3>
+            <div id="out-greedy">—</div>
+            <div id="out-opt" style="margin-top:.4rem">—</div>
+            <div class="muted" id="explain" style="margin-top:.4rem"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Next</h2>
+        <p>Continue with <a href="dp.html">Dynamic Programming</a> or go back to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" style="text-align:center;color:var(--muted);padding:1.8rem 0;font-size:.95rem;">
+    <p>© <span id="year"></span> Algo123 · <a href="../index.html" style="color:var(--accent-2);text-decoration:none;">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // --- Interval Scheduling Demo ---
+    function parseIntervals(text){
+      const lines = text.split(/\n|;/).map(s=>s.trim()).filter(Boolean);
+      const arr = [];
+      for(const ln of lines){
+        const parts = ln.split(/\s|,|\t/).map(x=>x.trim()).filter(Boolean);
+        if(parts.length >= 2){
+          const s = parseFloat(parts[0]);
+          const e = parseFloat(parts[1]);
+          if(Number.isFinite(s) && Number.isFinite(e) && e> s){ arr.push({s, e}); }
+        }
+      }
+      return arr;
+    }
+
+    function greedySchedule(intervals){
+      const sorted = [...intervals].sort((a,b)=> a.e===b.e ? a.s-b.s : a.e-b.e);
+      const picked = []; let lastEnd = -Infinity;
+      for(const it of sorted){
+        if(it.s >= lastEnd){ picked.push(it); lastEnd = it.e; }
+      }
+      return picked;
+    }
+
+    // Optimal via classic DP: sort by finish time, p(j) predecessor index
+    function optimalSchedule(intervals){
+      const I = [...intervals].sort((a,b)=> a.e-b.e);
+      const n = I.length;
+      const ends = I.map(it=>it.e);
+      const p = Array(n).fill(-1);
+      for(let j=0;j<n;j++){
+        let i = -1; // rightmost i < j with I[i].e <= I[j].s
+        let lo=0, hi=j-1;
+        while(lo<=hi){
+          const mid = (lo+hi)>>1;
+          if(ends[mid] <= I[j].s){ i = mid; lo = mid+1; } else { hi = mid-1; }
+        }
+        p[j] = i;
+      }
+      const OPT = Array(n).fill(0);
+      for(let j=0;j<n;j++){
+        const take = 1 + (p[j] >= 0 ? OPT[p[j]] : 0);
+        const skip = j>0 ? OPT[j-1] : 0;
+        OPT[j] = Math.max(take, skip);
+      }
+      // reconstruct
+      const chosen = [];
+      let j = n-1;
+      while(j>=0){
+        const take = 1 + (p[j] >= 0 ? OPT[p[j]] : 0);
+        const skip = j>0 ? OPT[j-1] : 0;
+        if(take >= skip){ chosen.push(I[j]); j = p[j]; } else { j = j-1; }
+      }
+      chosen.reverse();
+      return chosen;
+    }
+
+    function fmt(list){
+      return '[' + list.map(it=>`(${it.s},${it.e})`).join(', ') + ']';
+    }
+
+    function run(){
+      const text = document.getElementById('intervals').value;
+      const arr = parseIntervals(text);
+      const outG = document.getElementById('out-greedy');
+      const outO = document.getElementById('out-opt');
+      const ex = document.getElementById('explain');
+      if(!arr.length){ outG.textContent = 'Please enter valid intervals.'; outO.textContent=''; ex.textContent=''; return; }
+      if(arr.length > 60){ outG.textContent = `Too many intervals for demo (n=${arr.length}). Try ≤ 60.`; outO.textContent=''; ex.textContent=''; return; }
+      const g = greedySchedule(arr);
+      const o = optimalSchedule(arr);
+      outG.innerHTML = `<strong>Greedy (earliest finish):</strong> ${fmt(g)} — count = ${g.length}`;
+      outO.innerHTML = `<strong>Optimal (DP):</strong> ${fmt(o)} — count = ${o.length}`;
+      ex.textContent = (g.length === o.length) ? 'Greedy is optimal here (classic theorem).' : 'Greedy is not optimal on this instance (try different intervals).';
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    run();
+  </script>
+</body>
+</html>

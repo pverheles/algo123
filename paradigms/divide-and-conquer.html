@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Algo123 — Divide & Conquer</title>
+  <meta name="description" content="Divide & Conquer: split, solve subproblems recursively, and combine. When to use it, Master Theorem intuition, examples (merge sort, closest pair), pitfalls, and an interactive recurrence demo." />
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <style>
+    :root{ --bg:#0f1226; --bg-soft:#141738; --card:rgba(255,255,255,0.06); --text:#f4f6fb; --muted:#b7c0d6; --accent:#7c9cff; --accent-2:#5ce1e6; --ring:rgba(124,156,255,.35); --shadow:0 10px 30px rgba(0,0,0,.3); --border:rgba(255,255,255,.12); }
+    [data-theme="light"]{ --bg:#f7f9ff; --bg-soft:#ffffff; --card:rgba(22,26,57,0.06); --text:#121325; --muted:#4a4f70; --accent:#3758f9; --accent-2:#0eb5bd; --ring:rgba(55,88,249,.25); --shadow:0 10px 25px rgba(17,24,39,.08); --border:rgba(17,24,39,.12); }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-sans-serif,system-ui; background:radial-gradient(1250px 650px at 10% -10%, #2b2e52, transparent 70%), radial-gradient(1250px 650px at 110% 10%, #14294d, transparent 70%), var(--bg); color:var(--text); line-height:1.6}
+    .container{width:min(1100px,92%);margin-inline:auto}
+    .header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,rgba(124,156,255,.2),rgba(92,225,230,.12));border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0}
+    .brand{display:flex;align-items:center;gap:.75rem;font-weight:800;letter-spacing:.3px}
+    .brand-logo{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    .nav a{color:var(--text);text-decoration:none;opacity:.9;font-weight:600}
+    .nav a:hover{opacity:1}
+    .links{display:flex;gap:1.1rem;align-items:center}
+    .ghost{background:transparent;border:1px solid var(--border);padding:.5rem .9rem;border-radius:.7rem}
+    .theme-toggle{background:transparent;border:1px solid var(--border);color:var(--text);padding:.45rem .6rem;border-radius:.6rem;cursor:pointer}
+    .hero{padding:2.2rem 0 1.2rem}
+    .breadcrumbs{color:var(--muted);font-size:.92rem}
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem);margin:.4rem 0 .6rem}
+    .hero p{color:var(--muted);max-width:65ch}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:1.2rem}
+    aside{position:sticky;top:72px;align-self:start;background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .toc h3{margin:.2rem 0 .4rem;font-size:1rem}
+    .toc a{color:var(--muted);text-decoration:none;display:block;padding:.25rem 0}
+    .toc a:hover{color:var(--text)}
+    .section{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem}
+    .section h2{margin:.1rem 0 .4rem;font-size:1.25rem}
+    .muted{color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);padding:.12rem .35rem;border-radius:.35rem;border:1px solid var(--border)}
+    .badge{border:1px dashed var(--border);padding:.15rem .45rem;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:.8rem 1rem}
+    pre{background:var(--bg-soft);border:1px dashed var(--border);border-radius:.7rem;padding:.9rem;overflow:auto}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .demo{background:var(--bg-soft);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:.9rem;padding:1rem}
+    @media (max-width:980px){.layout{grid-template-columns:1fr}aside{position:relative;top:auto}.cards,.grid-2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container" aria-label="Primary">
+      <div class="brand" aria-label="Logo & Brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 12h6l-4 8 8-16h6l-4 8h6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Algo123</span>
+      </div>
+      <div class="links">
+        <a href="../index.html">Home</a>
+        <a href="../core-paradigms.html">Core Paradigms</a>
+        <a class="ghost" href="greedy.html">Next: Greedy →</a>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero container">
+    <div class="breadcrumbs">Home / <a href="../index.html" class="muted" style="text-decoration:none;">Curriculum</a> / <a href="../core-paradigms.html" class="muted" style="text-decoration:none;">Core Paradigms</a> / Divide & Conquer</div>
+    <h1>Divide & Conquer</h1>
+    <p>Split → solve subproblems → combine. A powerful pattern behind merge sort, fast exponentiation, FFT, closest pair of points, and more.</p>
+    <div class="badge-row" aria-hidden="true" style="display:flex; gap:.5rem; margin-top:.4rem;">
+      <span class="badge">Recurrences</span>
+      <span class="badge">Master Theorem</span>
+      <span class="badge">Scalable</span>
+    </div>
+  </section>
+
+  <main class="container layout" id="content">
+    <aside id="toc" class="toc" aria-label="On this page">
+      <h3>On this page</h3>
+      <nav>
+        <a href="#definition">Definition</a>
+        <a href="#when">When to use</a>
+        <a href="#template">Design Template</a>
+        <a href="#recurrence">Recurrence & Master</a>
+        <a href="#examples">Examples</a>
+        <a href="#pitfalls">Pitfalls</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#next">Next</a>
+      </nav>
+    </aside>
+
+    <div>
+      <section id="definition" class="section">
+        <h2>Definition</h2>
+        <p><strong>Divide & Conquer</strong> solves a problem by splitting it into smaller subproblems of the same kind, solving each recursively, and combining their solutions.</p>
+      </section>
+
+      <section id="when" class="section">
+        <h2>When to use</h2>
+        <div class="cards">
+          <div class="card"><strong>Natural splits</strong><p class="muted">Problem decomposes into similar subproblems.</p></div>
+          <div class="card"><strong>Efficient combine</strong><p class="muted">Merging/combining takes near‑linear time.</p></div>
+          <div class="card"><strong>Balanced sizes</strong><p class="muted">Subproblems are of roughly equal size.</p></div>
+          <div class="card"><strong>Parallelizable</strong><p class="muted">Independent subproblems can be parallelized.</p></div>
+        </div>
+      </section>
+
+      <section id="template" class="section">
+        <h2>Design Template</h2>
+        <pre><code>DIVIDE-AND-CONQUER(Problem P)
+  if small(P) then
+    return solveDirectly(P)
+  split P into P1, P2, ..., Pa
+  S1, S2, ..., Sa ← recursively solve each Pi
+  return combine(S1, S2, ..., Sa)
+</code></pre>
+      </section>
+
+      <section id="recurrence" class="section">
+        <h2>Recurrence & Master Theorem</h2>
+        <p>Running time often satisfies \(T(n) = a\,T(n/b) + f(n)\), where \(a\) is the number of subproblems, each of size \(n/b\), and \(f(n)\) is split+combine cost.</p>
+        <div class="cards">
+          <div class="card"><strong>Case 1</strong><p>If \(f(n) = O(n^{\log_b a - \varepsilon})\), then \(T(n) = \Theta(n^{\log_b a})\).</p></div>
+          <div class="card"><strong>Case 2</strong><p>If \(f(n) = \Theta(n^{\log_b a}\,(\log n)^k)\), then \(T(n) = \Theta(n^{\log_b a}\,(\log n)^{k+1})\).</p></div>
+          <div class="card"><strong>Case 3</strong><p>If \(f(n) = \Omega(n^{\log_b a + \varepsilon})\) (plus regularity), then \(T(n) = \Theta(f(n))\).</p></div>
+        </div>
+      </section>
+
+      <section id="examples" class="section">
+        <h2>Examples</h2>
+        <div class="cards">
+          <div class="card"><strong>Merge sort</strong><p>\(T(n)=2T(n/2)+n=\Theta(n\log n)\).</p></div>
+          <div class="card"><strong>Binary search</strong><p>\(T(n)=T(n/2)+1=\Theta(\log n)\).</p></div>
+          <div class="card"><strong>Closest pair</strong><p>Split plane by median; combine with strip check → \(\Theta(n\log n)\).</p></div>
+          <div class="card"><strong>Karatsuba</strong><p>\(T(n)=3T(n/2)+n=\Theta(n^{\log_2 3})\approx n^{1.585}\).</p></div>
+        </div>
+      </section>
+
+      <section id="pitfalls" class="section">
+        <h2>Pitfalls</h2>
+        <ul>
+          <li>Highly unbalanced splits (degrades to \(T(n)=T(n-1)+f(n)\)).</li>
+          <li>Expensive combine step can dominate.</li>
+          <li>Base cases not tuned → overhead.</li>
+        </ul>
+      </section>
+
+      <section id="demo" class="section demo">
+        <h2>Interactive Demo: Recurrence Explorer</h2>
+        <div class="grid-2">
+          <div class="panel">
+            <label for="a">a (subproblems):</label>
+            <input id="a" type="number" value="2" min="1" step="1" style="width:100%" />
+            <label for="b" style="margin-top:.5rem;display:block;">b (shrink factor):</label>
+            <input id="b" type="number" value="2" min="2" step="1" style="width:100%" />
+            <label for="fn" style="margin-top:.5rem;display:block;">f(n) (combine work):</label>
+            <select id="fn" style="width:100%">
+              <option value="n">n</option>
+              <option value="nlogn">n log n</option>
+              <option value="n2">n^2</option>
+            </select>
+            <label for="n" style="margin-top:.5rem;display:block;">n (size):</label>
+            <input id="n" type="range" min="1" max="1048576" value="1024" style="width:100%" />
+            <div class="muted">n = <span id="n-val">1,024</span></div>
+            <p style="margin-top:.6rem"><button class="ghost" id="calc">Estimate</button></p>
+            <p class="muted">We compare \(n^{\log_b a}\) vs your chosen \(f(n)\) to predict the dominating term.</p>
+          </div>
+          <div class="panel">
+            <h3 style="margin-top:.2rem;">Estimate</h3>
+            <div id="out">—</div>
+            <div class="muted" id="explain" style="margin-top:.4rem;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="next" class="section">
+        <h2>Next</h2>
+        <p>Continue to <a href="greedy.html">Greedy</a> or head back to <a href="../core-paradigms.html">Core Paradigms</a>.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" style="text-align:center;color:var(--muted);padding:1.8rem 0;font-size:.95rem;">
+    <p>© <span id="year"></span> Algo123 · <a href="../index.html" style="color:var(--accent-2);text-decoration:none;">Back to Home</a></p>
+  </footer>
+
+  <script>
+    // Theme toggle (persisted)
+    const key = 'algolearn-theme';
+    const root = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem(key);
+    if(saved === 'light'){ root.setAttribute('data-theme','light'); }
+    toggle?.addEventListener('click', () => {
+      const light = root.getAttribute('data-theme') === 'light';
+      root.setAttribute('data-theme', light ? '' : 'light');
+      localStorage.setItem(key, light ? '' : 'light');
+    });
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Demo logic
+    const aEl = document.getElementById('a');
+    const bEl = document.getElementById('b');
+    const fnEl = document.getElementById('fn');
+    const nEl = document.getElementById('n');
+    const nVal = document.getElementById('n-val');
+    const out = document.getElementById('out');
+    const explain = document.getElementById('explain');
+    const calcBtn = document.getElementById('calc');
+
+    function est(){
+      const a = Math.max(1, parseInt(aEl.value,10)||1);
+      const b = Math.max(2, parseInt(bEl.value,10)||2);
+      const n = Math.max(1, parseInt(nEl.value,10)||1);
+      nVal.textContent = n.toLocaleString();
+      const lg = Math.log(a) / Math.log(b); // log_b a
+      const crit = Math.pow(n, lg);
+      let f; let fname;
+      if(fnEl.value==='n'){ f = n; fname='n'; }
+      else if(fnEl.value==='nlogn'){ f = n * (Math.log2(n)||1); fname='n log n'; }
+      else { f = n*n; fname='n^2'; }
+      const ratio = f / crit;
+      let msg;
+      if(ratio < Math.pow(n, -0.1)){
+        msg = `Case 1: n^{log_b a} dominates → Θ(n^{log_b a})`; 
+      } else if(ratio > Math.pow(n, 0.1)){
+        msg = `Case 3: f(n) dominates → Θ(f(n))`;
+      } else {
+        msg = `Case 2: balanced → Θ(n^{log_b a} · log n)`;
+      }
+      out.innerHTML = `<strong>${msg}</strong>`;
+      explain.textContent = `n^{log_b a} ≈ ${crit.toLocaleString()} vs f(n) ≈ ${Math.round(f).toLocaleString()} at n=${n.toLocaleString()} (a=${a}, b=${b}, f(n)=${fname}).`;
+    }
+
+    nEl.addEventListener('input', est);
+    calcBtn.addEventListener('click', est);
+    est();
+  </script>
+</body>
+</html>
